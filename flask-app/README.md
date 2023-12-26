@@ -16,9 +16,10 @@ This repository contains a simple Flask application designed to demonstrate the 
 ### Prerequisites
 
 - Docker installed on your machine.
+- Access to a Docker Hub account.
 - Access to a Kubernetes cluster (for Kubernetes deployment).
 
-### Running the Application with Docker
+### Local Development and Testing
 
 1. **Clone the Repository:**
     ```sh
@@ -39,26 +40,33 @@ This repository contains a simple Flask application designed to demonstrate the 
 4. **Access the Application:**
     Open a web browser and navigate to `http://localhost:5000`.
 
-### Deploying on Kubernetes
+### Adding the Image to Docker Hub
 
-1. **Create a Docker Image and Push to a Registry:**
-    Follow the instructions specific to your container registry.
-
-2. **Update the Kubernetes Deployment YAML:**
-    Modify the image path in the provided Kubernetes deployment YAML file to point to your Docker image.
-
-3. **Apply the Deployment:**
+1. **Log in to Docker Hub from Your Command Line:**
     ```sh
-    kubectl apply -f deployment.yaml
+    docker login
     ```
 
-4. **Access the Application:**
-    The access method may vary based on your Kubernetes setup.
+2. **Tag Your Docker Image:**
+    Replace `yourdockerhubusername` with your Docker Hub username and `tagname` with your desired tag.
+    ```sh
+    docker tag myflaskapp yourdockerhubusername/myflaskapp:v1
+    ```
 
-## Contribution
+3. **Push the Image to Docker Hub:**
+    ```sh
+    docker push yourdockerhubusername/myflaskapp:v1
+    ```
 
-Feel free to fork this repository and contribute by submitting a pull request. We appreciate your input in making this project more robust and versatile.
+4. **Verify the Image on Docker Hub:**
+    Check your Docker Hub account to see if the image is uploaded.
 
-## License
+### Deploying on Kubernetes
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+1. **Create or Update the Kubernetes Deployment YAML:**
+   Edit the `deployment.yaml` file to point to the image on your Docker Hub account (`yourdockerhubusername/myflaskapp:v1`).
+
+2. **Apply the Deployment:**
+   Apply the deployment to your Kubernetes cluster using the command:
+   ```sh
+   kubectl apply -f deployment.yaml
