@@ -22,7 +22,7 @@ This repository contains a simple Flask application designed to demonstrate the 
 
 1. **Clone the Repository:**
     ```sh
-    git clone [repository_url]
+    git clone https://github.com/pvass24/k8s-kadence.git
     ```
 
 2. **Build the Docker Image:**
