@@ -17,22 +17,15 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   ```
 ### For Windows Users
 - **Install WSL 2:**
-1.```sh
-  dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-  ```
-2.```sh
-  dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-  ```
-3. Download and Install the WSL2 Linux Kernel:
-   Download the WSL2 Linux kernel update package
-
-4.```sh
-  wsl --set-default-version 2
-  ```
-5.Download Ubuntu on wsl 
+1. Enable WSL:
   ```sh
-  https://ubuntu.com/wsl
+  wsl --install
   ```
+  ## :rotating_light: Be sure to restart your Machine once installed!
+
+## Important Note
+If you want to install a different Linux distribution, you can specify it with the --distribution flag in the wsl --install command. For example, wsl --install -d Debian for Debian. Alternatively, you can install another distribution from the Microsoft Store after setting up WSL. 
+
 ### Using Chocolatey (Windows Package Manager):
 - **Install Docker:**
   ```sh
@@ -68,7 +61,7 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   ```
 
 ### Step 2: Cluster Configuration(On macOS/ Windows/Linux)
-  Create a file named kind-config.yaml and copy the contents below into it. This configuration sets up a cluster with one control-plane node and twwo worker nodes.
+  Create a file named kind-config.yaml and copy the contents below into it. This configuration sets up a cluster with one control-plane node and two worker nodes.
 
 - **Create Config File:**
   ```sh
@@ -93,7 +86,7 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
 
 ### Step 4: Kubectl Autocomplete & Aliases
   To streamline your Kubernetes command-line experience, let's set up autocomplete and aliases for kubectl.
-  For ZSH Users (Mac)
+  For ZSH Users(Mac)
 - **Set up autocomplete:**
   ```sh
   source <(kubectl completion zsh)
