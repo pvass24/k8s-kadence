@@ -21,7 +21,7 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   ```sh
   wsl --install
   ```
-  ## :rotating_light: Be sure to restart your Machine once installed!
+  ## :rotating_light: Be sure to restart your Machine once installed! :rotating_light:
 
 ## Important Note
 If you want to install a different Linux distribution, you can specify it with the --distribution flag in the wsl --install command. For example, wsl --install -d Debian for Debian. Alternatively, you can install another distribution from the Microsoft Store after setting up WSL. 
