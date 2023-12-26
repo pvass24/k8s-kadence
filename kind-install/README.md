@@ -11,12 +11,29 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   ```sh
   brew install docker
   ```
-
 - **Install kubectl:**
   ```sh
   brew install kubectl
   ```
 ### For Windows Users
+- **Install WSL 2:**
+1.```sh
+  dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+  ```
+2.```sh
+  dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+  ```
+3. Download and Install the WSL2 Linux Kernel:
+   Download the WSL2 Linux kernel update package
+
+4.```sh
+  wsl --set-default-version 2
+  ```
+5.Download Ubuntu on wsl 
+  ```sh
+  https://ubuntu.com/wsl
+  ```
+### Using Chocolatey (Windows Package Manager):
 - **Install Docker:**
   ```sh
   choco install docker
@@ -36,7 +53,7 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   ```
   Replace c:\some-dir-in-your-PATH with a directory in your system's PATH.
 
-### Step 1: Download KinD
+### Step 1: Download KinD(MacOS and Linux)
   For macOS and Linux users, download and install KinD, which allows us to run Kubernetes clusters locally.
   
 - **On macOS via Homebrew:**
@@ -50,10 +67,10 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   sudo mv ./kind /usr/local/bin/
   ```
 
-### Step 2: Cluster Configuration
-  Create a file named kind-config.yaml and copy the contents below into it. This configuration sets up a cluster with one control-plane node and three worker nodes.
+### Step 2: Cluster Configuration(On macOS/ Windows/Linux)
+  Create a file named kind-config.yaml and copy the contents below into it. This configuration sets up a cluster with one control-plane node and twwo worker nodes.
 
-- **On macOS and Windows:**
+- **Create Config File:**
   ```sh
   kind: Cluster
   apiVersion: kind.x-k8s.io/v1alpha4
@@ -82,10 +99,17 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   source <(kubectl completion zsh)
   echo '[[ $commands[kubectl] ]] && source <(kubectl completion zsh)' >> ~/.zshrc
   ```
-   For Powershell Users (Windows)
+   For BASH Users(Linux & WSL)
 - **Set up autocomplete:**
   ```sh
-  Set-Alias -Name k -Value kubectl
+  source <(kubectl completion bash)
+  echo "source <(kubectl completion bash)" >> ~/.bashrc
+  ```
+- **For shorthand usage of kubectl:**
+  ```sh
+  alias k=kubectl
+  complete -o default -F __start_kubectl k
+
   ```
   This command creates an alias k for kubectl. You can then use k instead of typing out kubectl each time.
 
