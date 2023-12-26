@@ -82,7 +82,7 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   source <(kubectl completion zsh)
   echo '[[ $commands[kubectl] ]] && source <(kubectl completion zsh)' >> ~/.zshrc
   ```
-   For ZSH Users (Mac)
+   For Powershell Users (Windows)
 - **Set up autocomplete:**
   ```sh
   Set-Alias -Name k -Value kubectl
