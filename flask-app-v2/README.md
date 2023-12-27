@@ -33,8 +33,10 @@ This repository contains a simple Flask application designed to demonstrate the 
 
 3. **Run the Docker Container:**
     Replace `<username>` with your desired username.
+    Replace `<bg-color>` with your desired background color.
+    Replace `<font-color>` with your desired font color.
     ```sh
-    docker run -p 5000:5000 -e USERNAME=<username> myflaskapp
+    docker run -p 5000:5000 -e USERNAME=<username> -e BG_COLOR=<bg-color> -e FONT_COLOR=<font-color> myflaskapp 
     ```
 
 4. **Access the Application:**
