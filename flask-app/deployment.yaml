@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: myflaskapp
-        image: yourdockerhubusername/myflaskapp:v1
+        image: pvass24/myflaskapp:v1
         ports:
         - containerPort: 5000
         env:
