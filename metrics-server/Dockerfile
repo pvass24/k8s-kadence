@@ -9,7 +9,6 @@ EXPOSE 9090
 EXPOSE 3000
 
 # Create a user named "prometheus" with a specific UID and GID
-RUN groupadd -g 1000 prometheus && useradd -u 1000 -g prometheus -M -s /bin/false prometheus
 
 
 # Set the user to run Prometheus (optional)
