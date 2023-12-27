@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'flask-metrics'
+    static_configs:
+      - targets: ['flask-app:5000']  # Replace with your Flask app's service name and port
+
