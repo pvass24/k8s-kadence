@@ -8,10 +8,4 @@ COPY prometheus-cfg.yaml /etc/prometheus/
 EXPOSE 9090
 EXPOSE 3000
 
-# Create a user named "prometheus" with a specific UID and GID
-RUN addgroup -g 1000 prometheus && adduser -u 1000 -g prometheus -M -s /bin/false prometheus
-
-
-# Set the user to run Prometheus (optional)
-USER promethues
 
