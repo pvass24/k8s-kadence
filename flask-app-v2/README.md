@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a simple Flask application designed to demonstrate the basics of containerization using Docker and orchestration using Kubernetes. The application greets users with a personalized message, "Hello {username} welcome to K8’s Kadence!", where the `{username}` is dynamically set through an environment variable. The goal of this project is to provide a hands-on experience for students learning about Docker, Kubernetes, and the principles of deploying applications in a containerized environment.
+This repository contains a simple Flask application designed to demonstrate the basics of containerization using Docker and orchestration using Kubernetes. The application greets users with a personalized message, "Hello {username} welcome to K8’s Kadence!", where the `{username}`, `{bg-color}`, & `{font-color}` is dynamically set through an environment variable. The goal of this project is to provide a hands-on experience for students learning about Docker, Kubernetes, and the principles of deploying applications in a containerized environment.
 
 ## Features
 
@@ -28,7 +28,7 @@ This repository contains a simple Flask application designed to demonstrate the 
 
 2. **Build the Docker Image:**
     ```sh
-    docker build -t myflaskapp .
+    docker build -t <yourdockerhubusername>/myflaskapp:v2 .
     ```
 
 3. **Run the Docker Container:**
@@ -52,12 +52,12 @@ This repository contains a simple Flask application designed to demonstrate the 
 2. **Tag Your Docker Image:**
     Replace `yourdockerhubusername` with your Docker Hub username and `tagname` with your desired tag.
     ```sh
-    docker tag myflaskapp yourdockerhubusername/myflaskapp:v1
+    docker tag myflaskapp <yourdockerhubusername>/myflaskapp:v2
     ```
 
 3. **Push the Image to Docker Hub:**
     ```sh
-    docker push yourdockerhubusername/myflaskapp:v1
+    docker push yourdockerhubusername/myflaskapp:v2
     ```
 
 4. **Verify the Image on Docker Hub:**
@@ -66,7 +66,7 @@ This repository contains a simple Flask application designed to demonstrate the 
 ### Deploying on Kubernetes
 
 1. **Create or Update the Kubernetes Deployment YAML:**
-   Edit the `deployment.yaml` file to point to the image on your Docker Hub account (`yourdockerhubusername/myflaskapp:v1`).
+   Edit the `deployment.yaml` file to point to the image on your Docker Hub account (`yourdockerhubusername/myflaskapp:v2`).
 
 2. **Apply the Deployment:**
    Apply the deployment to your Kubernetes cluster using the command:

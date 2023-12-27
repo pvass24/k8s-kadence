@@ -14,9 +14,13 @@ spec:
     spec:
       containers:
       - name: myflaskapp
-        image: pvass24/myflaskapp:v1
+        image: pvass24/myflaskapp:v2
         ports:
         - containerPort: 5000
         env:
         - name: USERNAME
           value: "DefaultUser"
+        - name: BG-COLOR
+          value: "lightblue"
+        - name: FONT_COLOR
+          value: "white"
