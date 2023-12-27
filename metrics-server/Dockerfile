@@ -2,7 +2,7 @@
 FROM prom/prometheus:v2.28.0
 
 # Copy Prometheus configuration file
-COPY prometheus.yml /etc/prometheus/
+COPY prometheus.yaml /etc/prometheus/
 
 # Expose Prometheus and Grafana ports
 EXPOSE 9090
