@@ -42,6 +42,9 @@ This repository contains a simple Flask application designed to demonstrate the 
 4. **Access the Application:**
     Open a web browser and navigate to `http://localhost:5000`.
 
+5. **Stop the Container:**
+    Enter `Control + C` to stop the container.
+
 ### Adding the Image to Docker Hub
 
 1. **Log in to Docker Hub from Your Command Line:**
