@@ -95,6 +95,6 @@ This repository contains a simple Flask application designed to demonstrate the 
 4. **View the metrics:**
 
    Enter https://localhost:3000/metrics to view your apps metrics.
-   You should try reloading the https://localhost:3000 page to simulate users connecting to your application.
+   You should try reloading the https://localhost:3000 page a few times to simulate users connecting to your application.
 
 
