@@ -28,17 +28,20 @@ This repository contains a simple Flask application designed to demonstrate the 
 
 2. **Build the Docker Image:**
     ```sh
-    docker build -t myflaskapp .
+    docker build -t myflaskapp:v1 .
     ```
 
 3. **Run the Docker Container:**
     Replace `<username>` with your desired username.
     ```sh
-    docker run -p 5000:5000 -e USERNAME=<username> myflaskapp
+    docker run -p 5000:5000 -e USERNAME=<username> myflaskapp:v1
     ```
 
 4. **Access the Application:**
     Open a web browser and navigate to `http://localhost:5000`.
+
+5. **Stop the Container:**
+    Enter `Control + C` to stop the container.
 
 ### Adding the Image to Docker Hub
 
@@ -50,7 +53,7 @@ This repository contains a simple Flask application designed to demonstrate the 
 2. **Tag Your Docker Image:**
     Replace `yourdockerhubusername` with your Docker Hub username and `tagname` with your desired tag.
     ```sh
-    docker tag myflaskapp yourdockerhubusername/myflaskapp:v1
+    docker tag myflaskapp:v1 yourdockerhubusername/myflaskapp:v1
     ```
 
 3. **Push the Image to Docker Hub:**
@@ -70,3 +73,24 @@ This repository contains a simple Flask application designed to demonstrate the 
    Apply the deployment to your Kubernetes cluster using the command:
    ```sh
    kubectl apply -f deployment.yaml
+
+3. **View and Create the Service:**
+   
+   Since were using KinD, to access the deployment we need to create a service. I have created the service yaml file for you. Check it out. Its called myflaskapp-svc.yaml
+   ```sh
+   cat myflaskapp-svc.yaml
+   ```
+   You can see the service is exposing the flask app with a nodePort of 30000. This port has backend configurations that translate the nodePort to port `3000` locally which is in the cluster config. Also the pods in the deployment are "selected" due to the matching labels "app: myflaskapp".
+
+   Lets create the service.
+   ```sh
+   kubectl create -f myflaskapp-svc.yaml
+   ```
+   Enter https://localhost:3000 to view your application.
+
+4. **Clean UP:**
+   Lets delete the Deployment to continue to the next session.
+   ```sh
+   kubectl delete deployment myflaskapp-deployment
+   ```
+Great work! Now lets navigate to myflaskapp-v2 folder.
