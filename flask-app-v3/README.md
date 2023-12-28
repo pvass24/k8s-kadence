@@ -2,8 +2,7 @@
 
 ## Overview
 
-This repository contains a simple Flask application designed to demonstrate the basics of containerization using Docker and orchestration using Kubernetes. The application greets users with a personalized message, "Hello {username} welcome to K8’s Kadence!", where the `{username}`, `{bg-color}`, & `{font-color}` is dynamically set through an environment variable. The goal of this project is to provide a hands-on experience for students learning about Docker, Kubernetes, and the principles of deploying applications in a containerized environment.
-
+This repository contains a simple Flask application designed to demonstrate the basics of containerization using Docker and orchestration using Kubernetes. The application greets users with a personalized message, "Hello {username} welcome to K8’s Kadence!", where the `{username}`, `{bg-color}`, & `{font-color}` is dynamically set through an environment variable. The goal of this project is to provide a hands-on experience for students learning about Docker, Kubernetes, and the principles of deploying applications in a containerized environment. The key difference with V3 vs V2 is we have added a way to gather metrics. We will be counting page visits as well as the duration of the requests. 
 ## Features
 
 - **Personalized Greeting:** The application uses an environment variable to personalize the greeting message.
@@ -74,6 +73,9 @@ This repository contains a simple Flask application designed to demonstrate the 
    ```sh
    kubectl apply -f deployment.yaml
 
+## Important Note
+   You can skip the next step if you have already created the service from the V1 section.
+
 3. **View and Create the Service:**
    Since were using KinD, to access the deployment we need to create a service. I have created the service yaml file for you. Check it out. Its called myflaskapp-svc.yaml
    ```sh
@@ -87,3 +89,9 @@ This repository contains a simple Flask application designed to demonstrate the 
    ```
    Enter https://localhost:3000 to view your application.
    
+4. **View the metrics:**
+
+   Enter https://localhost:3000/metrics to view your apps metrics.
+   You should try reloading the https://localhost:3000 page to simulate users connecting to your application.
+
+
