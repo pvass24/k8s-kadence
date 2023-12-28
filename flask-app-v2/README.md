@@ -100,4 +100,4 @@ This repository contains a simple Flask application designed to demonstrate the 
    ```sh
    kubectl delete deployment myflaskapp-deployment
    ```
-kubectl delete deploy .
+Great work! Now lets navigate to myflaskapp-v3 folder.

@@ -79,7 +79,7 @@ This repository contains a simple Flask application designed to demonstrate the 
    ```sh
    cat myflaskapp-svc.yaml
    ```
-   You can see the service is exposing the flask app with a nodePort of 30000. This port has backend configurations that translate the nodePort to port `3000` locally which is in the cluster config. Also the pods in the deployment are "selected" due to the matching lables "app: myflaskapp". 
+   You can see the service is exposing the flask app with a nodePort of 30000. This port has backend configurations that translate the nodePort to port `3000` locally which is in the cluster config. Also the pods in the deployment are "selected" due to the matching labels "app: myflaskapp". 
    
    Lets create the service.
    ```sh
