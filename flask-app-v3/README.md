@@ -24,11 +24,12 @@ This repository contains a simple Flask application designed to demonstrate the 
 1. **Clone the Repository:**
     ```sh
     git clone https://github.com/pvass24/k8s-kadence.git
+    cd k8s-kadence/flask-app-v3/
     ```
 
 2. **Build the Docker Image:**
     ```sh
-    docker build -t <yourdockerhubusername>/myflaskapp:v2 .
+    docker build -t myflaskapp:v3
     ```
 
 3. **Run the Docker Container:**
@@ -52,12 +53,12 @@ This repository contains a simple Flask application designed to demonstrate the 
 2. **Tag Your Docker Image:**
     Replace `yourdockerhubusername` with your Docker Hub username and `tagname` with your desired tag.
     ```sh
-    docker tag myflaskapp <yourdockerhubusername>/myflaskapp:v2
+    docker tag myflaskapp:v3 <yourdockerhubusername>/myflaskapp:v3
     ```
 
 3. **Push the Image to Docker Hub:**
     ```sh
-    docker push yourdockerhubusername/myflaskapp:v2
+    docker push yourdockerhubusername/myflaskapp:v3
     ```
 
 4. **Verify the Image on Docker Hub:**
@@ -66,9 +67,23 @@ This repository contains a simple Flask application designed to demonstrate the 
 ### Deploying on Kubernetes
 
 1. **Create or Update the Kubernetes Deployment YAML:**
-   Edit the `deployment.yaml` file to point to the image on your Docker Hub account (`yourdockerhubusername/myflaskapp:v2`).
+   Edit the `deployment.yaml` file to point to the image on your Docker Hub account (`yourdockerhubusername/myflaskapp:v3`).
 
 2. **Apply the Deployment:**
    Apply the deployment to your Kubernetes cluster using the command:
    ```sh
    kubectl apply -f deployment.yaml
+
+3. **View and Create the Service:**
+   Since were using KinD, to access the deployment we need to create a service. I have created the service yaml file for you. Check it out. Its called myflaskapp-svc.yaml
+   ```sh
+   cat myflaskapp-svc.yaml
+   ```
+   You can see the service is exposing the flask app with a nodePort of 30000. This port has backend configurations that translate the nodePort to port `3000` locally which is in the cluster config. Also the pods in the deployment are "selected" due to the matching lables "app: myflaskapp". 
+   
+   Lets create the service.
+   ```sh
+   kubectl create -f myflaskapp-svc.yaml
+   ```
+   Enter https://localhost:3000 to view your application.
+   
