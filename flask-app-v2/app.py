@@ -8,6 +8,7 @@ def hello():
     username = os.environ.get('USERNAME', 'User')
     bg_color = os.environ.get('BG_COLOR', 'lightblue')
     font_color = os.environ.get('FONT_COLOR', 'white')
+    pod_name = os.getenv('HOSTNAME')
     return render_template_string('''
         <html>
             <head>
@@ -15,9 +16,10 @@ def hello():
             </head>
             <body style="background-color: {{ bg_color }}; color: {{ font_color }};">
                 <h1>Hello {{ username }} welcome to K8’s Kadence!</h1>
+                <p>This is pod: {{ pod_name }}</p>
             </body>
         </html>
-    ''', username=username, bg_color=bg_color, font_color=font_color)
+    ''', username=username, bg_color=bg_color, font_color=font_color,pod_name=pod_name)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
