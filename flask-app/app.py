@@ -28,6 +28,7 @@ def hello():
             </head>
             <body style="background-color: lightblue; color: white;">
                 <h1>Hello {{ username }} welcome to K8’s Kadence!</h1>
+                <h2>Version: 2</h2>
             </body>
         </html>
     ''', username=username)
