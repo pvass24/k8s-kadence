@@ -15,8 +15,9 @@ def hello():
                 <title>K8's Kadence</title>
             </head>
             <body style="background-color: {{ bg_color }}; color: {{ font_color }};">
-                <h1>Hello {{ username }} welcome to K8’s Kadence!</h1>
+                <h1>Hello {{ username }} welcome to your K8’s Kadence App!</h1>
                 <h2>This is running on pod: {{ pod_name }}</h2>
+                <h2>Version: 2</h2>
             </body>
         </html>
     ''', username=username, bg_color=bg_color, font_color=font_color,pod_name=pod_name)
