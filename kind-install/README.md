@@ -46,6 +46,8 @@ If you want to install a different Linux distribution, you can specify it with t
   ```
   Replace c:\some-dir-in-your-PATH with a directory in your system's PATH.
 
+### Installing KinD
+
 ### Step 1: Download KinD(MacOS and Linux)
   For macOS and Linux users, download and install KinD, which allows us to run Kubernetes clusters locally.
   
