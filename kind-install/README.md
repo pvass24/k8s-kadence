@@ -31,7 +31,7 @@ If you want to install a different Linux distribution, you can specify it with t
   ```sh
   choco install docker
   ```
-- **Install `kubectl`:**
+- **Install kubectl:**
   ```sh
   choco install kubernetes-cli
   ```
