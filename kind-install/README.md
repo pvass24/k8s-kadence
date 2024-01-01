@@ -61,7 +61,7 @@ If you want to install a different Linux distribution, you can specify it with t
   ```
 
 ### Step 2: Cluster Configuration(On macOS/ Windows/Linux)
-  Create a file named kind-config.yaml and copy the contents below into it. This configuration sets up a cluster with one control-plane node and two worker nodes.
+  Create a file named `kind-config.yaml` and copy the contents below into it. This configuration sets up a cluster with one control-plane node and two worker nodes.
 
 - **Create Config File:**
   ```sh
