@@ -31,20 +31,10 @@ If you want to install a different Linux distribution, you can specify it with t
   ```sh
   choco install docker
   ```
-- **Install KinD:**
-  ```sh
-  choco install kind
-  ```
 - **Install `kubectl`:**
   ```sh
   choco install kubernetes-cli
   ```
-- **Alternatively, Install KinD Manually in PowerShell:**
-  ```sh
-  curl.exe -Lo kind-windows-amd64.exe https://kind.sigs.k8s.io/dl/v0.20.0/kind-windows-amd64
-  Move-Item .\kind-windows-amd64.exe c:\some-dir-in-your-PATH\kind.exe
-  ```
-  Replace c:\some-dir-in-your-PATH with a directory in your system's PATH.
 
 ### Installing KinD
 
@@ -61,6 +51,16 @@ If you want to install a different Linux distribution, you can specify it with t
   chmod +x ./kind
   sudo mv ./kind /usr/local/bin/
   ```
+- **On Windows:**
+  ```sh
+  choco install kind
+  ```
+- **Alternatively, Install KinD Manually in PowerShell:**
+  ```sh
+  curl.exe -Lo kind-windows-amd64.exe https://kind.sigs.k8s.io/dl/v0.20.0/kind-windows-amd64
+  Move-Item .\kind-windows-amd64.exe c:\some-dir-in-your-PATH\kind.exe
+  ```
+  Replace c:\some-dir-in-your-PATH with a directory in your system's PATH.
 
 ### Step 2: Cluster Configuration(On macOS/ Windows/Linux)
   Create a file named `kind-config.yaml` and copy the contents below into it. This configuration sets up a cluster with one control-plane node and two worker nodes.
