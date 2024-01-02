@@ -11,6 +11,10 @@ Before we begin, ensure you have Docker and `kubectl` installed on your device. 
   ```sh
   brew install docker
   ```
+- **Or Download Docker Desktop
+  [Docker Desktop](https://www.docker.com/products/docker-desktop)
+
+  
 - **Install kubectl:**
   ```sh
   brew install kubectl
