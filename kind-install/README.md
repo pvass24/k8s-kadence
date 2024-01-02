@@ -80,7 +80,7 @@ If you want to install a different Linux distribution, you can specify it with t
   ```sh
   kind create cluster --name my-cluster --config kind-config.yaml
   ```
-- **Verify th Cluster:**
+- **Verify the Cluster:**
   ```sh
   kubectl get nodes
   ```
