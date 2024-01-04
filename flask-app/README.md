@@ -75,18 +75,26 @@ This repository contains a simple Flask application designed to demonstrate the 
    kubectl apply -f deployment.yaml
 
 3. **View and Create the Service:**
-   
    Since were using KinD, to access the deployment we need to create a service. I have created the service yaml file for you. Check it out. Its called myflaskapp-svc.yaml
+   
    ```sh
    cat myflaskapp-svc.yaml
    ```
-   You can see the service is exposing the flask app with a nodePort of 30000. This port has backend configurations that translate the nodePort to port `3000` locally which is in the cluster config. Also the pods in the deployment are "selected" due to the matching labels "app: myflaskapp".
+   
+   You can see the service is exposing the flask app with a nodePort of `30000`. Also the pods in the deployment are "selected" due to the matching labels "app: myflaskapp".
 
    Lets create the service.
+   
    ```sh
    kubectl create -f myflaskapp-svc.yaml
    ```
-   Enter https://localhost:3000 to view your application.
+
+   We also need to port-forward this nodeport 30000 so we can access the app locally.
+   
+   ```sh
+   kubectl port-forward service/myflaskapp-svc 30000:5000
+   ```
+   Enter https://localhost:30000 to view your application.
 
 4. **Clean UP:**
    Lets delete the Deployment to continue to the next session.
