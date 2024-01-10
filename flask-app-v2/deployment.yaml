@@ -24,3 +24,7 @@ spec:
           value: "lightblue"
         - name: FONT_COLOR
           value: "white"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name

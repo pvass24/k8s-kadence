@@ -8,7 +8,7 @@ def hello():
     username = os.environ.get('USERNAME', 'User')
     bg_color = os.environ.get('BG_COLOR', 'lightblue')
     font_color = os.environ.get('FONT_COLOR', 'white')
-    pod_name = os.getenv('HOSTNAME')
+    pod_name = os.environ.get('POD_NAME, 'Unknown')
     return render_template_string('''
         <html>
             <head>
