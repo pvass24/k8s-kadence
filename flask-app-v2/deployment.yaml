@@ -15,6 +15,7 @@ spec:
       containers:
       - name: myflaskapp
         image: pvass24/myflaskapp:v2
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:
