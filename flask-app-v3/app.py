@@ -13,6 +13,7 @@ def hello():
     username = os.environ.get('USERNAME', 'User')
     bg_color = os.environ.get('BG_COLOR', 'lightblue')
     font_color = os.environ.get('FONT_COLOR', 'white')
+    pod_name = os.environ.get('POD_NAME', 'Unknown')
     return render_template_string('''
         <html>
             <head>
@@ -24,7 +25,7 @@ def hello():
                 <h2>Version: 3</h2>
             </body>
         </html>
-    ''', username=username, bg_color=bg_color, font_color=font_color)
+    ''', username=username, bg_color=bg_color, font_color=font_color, pod_name=pod_name)
 
 @app.route('/metrics')
 def metrics():

@@ -21,7 +21,11 @@ spec:
         env:
         - name: USERNAME
           value: "DefaultUser"
-        - name: BG-COLOR
+        - name: BG_COLOR
           value: "lightblue"
         - name: FONT_COLOR
           value: "white"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
