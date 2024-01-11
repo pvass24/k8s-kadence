@@ -29,3 +29,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        resources:
+          requests:
+            cpu: 100m  # 0.1 CPU cores
+          limits:
+            cpu: 200m  # 0.2 CPU cores
