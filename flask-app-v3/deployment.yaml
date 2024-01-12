@@ -6,11 +6,11 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: myflaskapp
+      version: "3"
   template:
     metadata:
       labels:
-        app: myflaskapp
+        version: "3"
     spec:
       containers:
       - name: myflaskapp
