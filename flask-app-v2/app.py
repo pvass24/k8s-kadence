@@ -8,7 +8,7 @@ def hello():
     username = os.environ.get('USERNAME', 'User')
     bg_color = os.environ.get('BG_COLOR', 'lightblue')
     font_color = os.environ.get('FONT_COLOR', 'white')
-    pod_name = os.environ.get('POD_NAME, 'Unknown')
+    pod_name = os.environ.get('POD_NAME', 'Unknown')
     return render_template_string('''
         <html>
             <head>
@@ -20,7 +20,7 @@ def hello():
                 <h2>Version: 2</h2>
             </body>
         </html>
-    ''', username=username, bg_color=bg_color, font_color=font_color,pod_name=pod_name)
+    ''', username=username, bg_color=bg_color, font_color=font_color, pod_name=pod_name)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
