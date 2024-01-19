@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-first-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: myflaskapp-svc
+            port:
+              number: 5000
+      - path: /old
+        pathType: Prefix
+        backend:
+          service:
+            name: myflaskapp-svc-v1
+            port:
+              number: 5000
