@@ -16,10 +16,3 @@ spec:
             name: myflaskapp-svc
             port:
               number: 5000
-      - path: /old
-        pathType: Prefix
-        backend:
-          service:
-            name: myflaskapp-svc-v1
-            port:
-              number: 5000
