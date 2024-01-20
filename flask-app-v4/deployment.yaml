@@ -2,20 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: myflaskapp-deployment
-  namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      version: "3"
+      version: "4"
   template:
     metadata:
       labels:
-        version: "3"
+        version: "4"
     spec:
       containers:
       - name: myflaskapp
-        image: pvass24/myflaskapp:v3
+        image: pvass24/myflaskapp:v4
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
