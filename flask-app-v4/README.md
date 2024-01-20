@@ -1,51 +1,90 @@
 # K8's Kadence Flask App
 
-## Overview
+## Introducing Helm
 
-This repository contains a simple Flask application designed to demonstrate the basics of containerization using Docker and orchestration using Kubernetes. The application greets users with a personalized message, "Hello {username} welcome to K8’s Kadence!", where the `{username}`, `{bg-color}`, & `{font-color}` is dynamically set through an environment variable. The goal of this project is to provide a hands-on experience for students learning about Docker, Kubernetes, and the principles of deploying applications in a containerized environment. The key difference with V3 vs V2 is we have added a way to gather metrics. We will be counting page visits as well as the duration of the requests. 
-## Features
+What is Helm?
 
-- **Personalized Greeting:** The application uses an environment variable to personalize the greeting message.
-- **Containerization:** The Flask app is containerized using Docker, allowing for easy deployment and scalability.
-- **Kubernetes Ready:** The application is designed to be deployed on a Kubernetes cluster, demonstrating basic Kubernetes concepts.
-- **Styling:** The application features a simple styling with white text on a light blue background.
+Helm is a package manager for Kubernetes, which is an open-source container orchestration platform. Helm is used to simplify the deployment and management of applications on Kubernetes clusters. It allows users to define, install, and upgrade even complex Kubernetes applications with ease.
+
+So What? 
+
+In essence, Helm transforms the concept of "applications" into tangible, manageable entities. It eliminates the cumbersome process of individually creating Kubernetes resources such as deployments, services, ingress, and more. Instead, Helm packages these resources as "Charts," simplifying the creation and removal of applications.
+
+Next Steps: So now we are going to create our own custom helm chart that will create everything for our Flask App! Excited? Yup I know!
 
 ## Getting Started
 
-### Prerequisites
 
-- Docker installed on your machine.
-- Access to a Docker Hub account.
-- Access to a Kubernetes cluster (for Kubernetes deployment).
 
-### Local Development and Testing
+### Install Helm
 
+From Homebrew (macOS)
 1. **Clone the Repository:**
     ```sh
-    git clone https://github.com/pvass24/k8s-kadence.git
-    cd k8s-kadence/flask-app-v3/
+    brew install helm    
     ```
 
-2. **Build the Docker Image:**
+From Apt (Debian/Ubuntu)
+   **Clone the Repository:**
     ```sh
-    docker build -t myflaskapp:v3
+    curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
     ```
 
-3. **Run the Docker Container:**
-    Replace `<username>` with your desired username.
-    Replace `<bg-color>` with your desired background color.
-    Replace `<font-color>` with your desired font color.
+From Apt (Debian/Ubuntu)
+   **Clone the Repository:**
     ```sh
-    docker run -p 5000:5000 -e USERNAME=<username> -e BG_COLOR=<bg-color> -e FONT_COLOR=<font-color> myflaskapp 
+    choco install kubernetes-helm    
     ```
 
-4. **Access the Application:**
-    Open a web browser and navigate to `http://localhost:5000`.
+2. **Create your Helm Chart:**
+    ```sh
+    helm create flask-app-chart
+    ```
 
-5. **Stop the Container:**
-    Enter `Control + C` to stop the container.
+3. **Comment out appVersion in Chart.yaml file:**
+    Example --> #appVersion: "1.16.0"
+    ```sh
+    vi Chart.yaml
+    ```
 
-### Adding the Image to Docker Hub
+4. **Add your Docker image to the values.yaml file:**
+    a. Example: Replace "repository: nginx" with --> repository: "yourdockerhubprofile/myflaskapp"
+    b. Also, replace tag to your desired tag of the docker image. It will default to the latest image.
+    c. Change service type to `NodePort` & port to `5000`
+    d-1. Update ingress to true classname to `nginx`
+    d-2. Uncomment this annotation `nginx.ingress.kubernetes.io/rewrite-target: /`
+    d-3. Make host value empty
+    d-4. Update pathType to `Prefix` 
+    ```sh
+    vi values.yaml
+    ```
+5. **Modify the templates/deployment.yaml file**
+    a. below readinessProbe add this:
+    
+    ```sh
+    env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+    ```
+6. **Install your helm release:**
+   ##Important Note: 
+   You must be outside of the flask-app-chart directory
+    ```sh
+    helm install nameofyourrelease flask-app-chart
+    ```
+7. **Access your App!**
+   Visit `http://localhost` and you should be able to access your application!
+
+
+### Installing ArgoCD
+
+
 
 1. **Log in to Docker Hub from Your Command Line:**
     ```sh
