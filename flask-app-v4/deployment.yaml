@@ -6,7 +6,7 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      version: "4"
+     version: "4"
   template:
     metadata:
       labels:
