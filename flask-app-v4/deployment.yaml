@@ -20,11 +20,20 @@ spec:
         - containerPort: 5000
         env:
         - name: USERNAME
-          value: "DefaultUser"
+          valueFrom:
+            configMapKeyRef:
+              name: env-values
+              key: USERNAME
         - name: BG_COLOR
-          value: "lightblue"
+          valueFrom:
+            configMapKeyRef:
+              name: env-values
+              key: BG_COLORl
         - name: FONT_COLOR
-          value: "white"
+          valueFrom:
+            configMapKeyRef:
+              name: env-values
+              key: FONT_COLOR
         - name: POD_NAME
           valueFrom:
             fieldRef:
