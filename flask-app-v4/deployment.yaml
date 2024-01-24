@@ -28,7 +28,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: env-values
-              key: BG_COLORl
+              key: BG_COLOR
         - name: FONT_COLOR
           valueFrom:
             configMapKeyRef:
