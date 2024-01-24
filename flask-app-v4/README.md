@@ -59,9 +59,18 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.
 
     c. Change service type to `NodePort` & port to `5000`
 
-    d-1. Update ingress to true classname to `nginx`
+    d-1. Update ingress enabled to `true` &  classname to `nginx`
 
-    d-2. Uncomment this annotation `nginx.ingress.kubernetes.io/rewrite-target: /`
+    d-2. Remove the `{}` & Uncomment this annotation `kubernetes.io/ingress.class: nginx`
+    and add this below: `nginx.ingress.kubernetes.io/rewrite-target: /`
+    should look like this
+
+    ```sh
+    annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    ```
 
     d-3. Make host value empty
 
@@ -88,6 +97,45 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.
     ```
 7. **Access your App!**
    Visit `http://localhost` and you should be able to access your application!
+
+
+
+### Creating a multibuld Docker Image
+
+1. **Create docker builder:**
+    ```sh
+    docker buildx create --name mybuilder --use
+    ```
+2. **Inspect the builder:**
+    ```sh
+    docker buildx inspect --bootstrap
+    ```
+3. **Build Docker image and push to docker registry:**
+    ```sh
+    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t pvass24/myflaskapp:v4 --push .
+    ```
+
+### Upgrades and Rollbacks
+
+To upgrade your application, make your changes is the `values.yaml` file and once complete run the command below:
+
+1. **Upgrade Release:**
+    ```sh
+    helm upgrade [RELEASE_NAME ./flask-app-chart]
+    ```
+Rub command below and you will see there is a `REVISION` field, this lets you know what revision you are on.
+2. **Check your release versions:**
+    ```sh
+    helm list
+    ``` 
+
+3. **Rollback Release:**
+    ```sh
+    helm rollback [RELEASE_NAME] <Release_number>
+    ```
+
+
+ 
 
 
 ### GitOps and ArgoCD
@@ -127,18 +175,4 @@ ArgoCD is ArgoCD is an open-source, GitOps-based continuous delivery tool design
 6. **Login to ArgoCD:**
     ```sh
     http://localhost:8080
-    ```
-### Creating a multibuld Docker Image
-
-1. **Create docker builder:**
-    ```sh
-    docker buildx create --name mybuilder --use
-    ```
-2. **Inspect the builder:**
-    ```sh
-    docker buildx inspect --bootstrap
-    ```
-3. **Build Docker image and push to docker registry:**
-    ```sh
-    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t pvass24/myflaskapp:v4 --push .
     ```
