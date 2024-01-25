@@ -114,7 +114,7 @@ From Homebrew (macOS)
     ```
 3. **Build Docker image and push to docker registry:**
     ```sh
-    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t pvass24/myflaskapp:v4 --push .
+    docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t YOURDOCKERACCOUNT/myflaskapp:v4 --push .
     ```
 
 ### Upgrades and Rollbacks
