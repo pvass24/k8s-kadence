@@ -53,9 +53,10 @@ From Homebrew (macOS)
     ```
 
 4. **Add your Docker image to the values.yaml file:**
-    a. Example: Replace "repository: nginx" with --> repository: "yourdockerhubprofile/myflaskapp"
 
-    b. Also, replace tag to your desired tag of the docker image. It will default to the latest image.
+    a. Example: Replace "repository: nginx" with --> repository: `yourdockerhubprofile/myflaskapp`
+
+    b. Also, replace tag to your desired tag of the docker image. It will default to the latest image. In our example lets use `v3`.
 
     c. Change service type to `NodePort` & port to `5000`
 
@@ -90,10 +91,11 @@ From Homebrew (macOS)
             fieldPath: metadata.name
     ```
 6. **Install your helm release:**
-### Important Note: 
-   You must be outside of the flask-app-chart directory
+
+### Important Note: You must be outside of the flask-app-chart directory
+
     ```sh
-    helm install nameofyourrelease flask-app-chart
+    helm install nameofyourrelease ./flask-app-chart
     ```
 7. **Access your App!**
    Visit `http://localhost` and you should be able to access your application!
