@@ -161,9 +161,9 @@ ArgoCD is ArgoCD is an open-source, GitOps-based continuous delivery tool design
 3. **Clone the Repository:**
     ```sh
     helm install argocd argo/argo-cd \
-  --namespace argocd \
-  --set server.extraArgs="{--insecure}" \
-  --set server.ingress.enabled=false
+    --namespace argocd \
+    --set server.extraArgs="{--insecure}" \
+    --set server.ingress.enabled=false
     ```
 4. **Enable port-forwarding for ArgoCD server:**
     ```sh
