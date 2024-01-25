@@ -39,8 +39,8 @@ From Homebrew (macOS)
     ```sh
     choco install kubernetes-helm    
     ```
-### Important Note:
-  Create a new folder for your helm chart artifacts
+### Important Note: Create a new folder for your helm chart artifacts
+
 2. **Create your Helm Chart:**
     ```sh
     helm create flask-app-chart
