@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: feature-toggle-config
+data:
+  FEATURE_DARK_MODE: "true"
+

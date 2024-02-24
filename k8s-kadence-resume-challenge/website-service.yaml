@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecom-web-service
+spec:
+  selector:
+    app: ecom-web
+  ports:
+  - protocol: TCP
+    port: 80 # The port the service exposes
+    targetPort: 80 # The target port on the Pods
+  type: NodePort # For cloud environments, creates an external load balancer
+
