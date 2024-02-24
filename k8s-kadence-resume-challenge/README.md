@@ -96,6 +96,8 @@ kubectl scale deployment/ecom-web --replicas=6
 to handle the increased load.
 Monitor Scaling: Observe the deployment scaling up with kubectl get pods.
 Outcome: The application scales up to handle increased traffic, showcasing Kubernetes’ ability to manage application scalability dynamically.
+
+
 7. **Perform a Rolling Update:**:
 Task: Update the website to include a new promotional banner for the marketing campaign.
 
@@ -104,13 +106,17 @@ Build and Push New Image: Build the updated Docker image as yourdockerhubusernam
 Rolling Update: Update website-deployment.yaml with the new image version and apply the changes.
 Monitor Update: Use kubectl rollout status deployment/ecom-web to watch the rolling update process.
 Outcome: The website updates with zero downtime, demonstrating rolling updates’ effectiveness in maintaining service availability.
-8. **Roll Back a Deployment:**:
+
+
+8. **Roll Back a Deployment:**
 Task: Suppose the new banner introduced a bug. Roll back to the previous version.
 
 Identify Issue: After deployment, monitoring tools indicate a problem affecting user experience.
 Roll Back: Execute kubectl rollout undo deployment/ecom-web to revert to the previous deployment state.
 Verify Rollback: Ensure the website returns to its pre-update state without the promotional banner.
 Outcome: The application’s stability is quickly restored, highlighting the importance of rollbacks in deployment strategies.
+
+
 9. **Autoscale Your Application:**:
 Task: Automate scaling based on CPU usage to handle unpredictable traffic spikes.
 
@@ -119,6 +125,8 @@ Apply HPA: Execute kubectl autoscale deployment ecom-web --cpu-percent=50 --min=
 Simulate Load: Use a tool like Apache Bench to generate traffic and increase CPU load.
 Monitor Autoscaling: Observe the HPA in action with kubectl get hpa.
 Outcome: The deployment automatically adjusts the number of pods based on CPU load, showcasing Kubernetes’ capability to maintain performance under varying loads.
+
+
 10. **Implement Liveness and Readiness Probes:**:
 Task: Ensure the web application is restarted if it becomes unresponsive and doesn’t receive traffic until ready.
 
@@ -126,12 +134,16 @@ Define Probes: Add liveness and readiness probes to website-deployment.yaml, tar
 Apply Changes: Update your deployment with the new configuration.
 Test Probes: Simulate failure scenarios (e.g., manually stopping the application) and observe Kubernetes’ response.
 Outcome: Kubernetes automatically restarts unresponsive pods and delays traffic to newly started pods until they’re ready, enhancing the application’s reliability and availability.
+
+
 11. **Utilize ConfigMaps and Secrets:**:
 Task: Securely manage the database connection string and feature toggles without hardcoding them in the application.
 
 Create Secret and ConfigMap: For sensitive data like DB credentials, use a Secret. For non-sensitive data like feature toggles, use a ConfigMap.
 Update Deployment: Reference the Secret and ConfigMap in the deployment to inject these values into the application environment.
 Outcome: Application configuration is externalized and securely managed, demonstrating best practices in configuration and secret management.
+
+
 12. **Document Your Process:**: 
 Finalize Your Project Code: Ensure your project is complete and functioning as expected. Test all features locally and document all dependencies clearly.
 Create a Git Repository: Create a new repository on your preferred git hosting service (e.g., GitHub, GitLab, Bitbucket).
