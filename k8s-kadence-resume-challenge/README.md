@@ -32,9 +32,9 @@ GitHub Account: For version control and implementing CI/CD pipelines.
 
 E-commerce Application Source Code and DB Scripts: Available at in this repo. Familiarize yourself with the application structure and database scripts provided.
 
-1. **Containerize Your E-Commerce Website and Database:**: 
-A. Web Application Containerization
-Create a Dockerfile: Navigate to the root of the e-commerce application and create a Dockerfile. This file should instruct Docker to:
+1. **Containerize Your E-Commerce Website and Database:** 
+    A. Web Application Containerization
+    Create a Dockerfile: Navigate to the root of the e-commerce application and create a Dockerfile. This file should instruct Docker to:
 ```sh
 Use php:7.4-apache as the base image.
 Install mysqli extension for PHP.
@@ -47,18 +47,18 @@ Push it to Docker Hub with docker push yourdockerhubusername/ecom-web:v1.
 Outcome: Your web application Docker image is now available on Docker Hub.
 ```
 
-B. Database Containerization
-Database Preparation: Instead of containerizing the database yourself, you’ll use the official MariaDB image. Prepare the database initialization script (`db-load-script.sql`) to be used with Kubernetes ConfigMaps or as an entrypoint script.
+    B. Database Containerization
+    Database Preparation: Instead of containerizing the database yourself, you’ll use the official MariaDB image. Prepare the database initialization script (`db-load-script.sql`) to be used with Kubernetes ConfigMaps or as an entrypoint script.
 
-2. **Deploy Your Website to Kubernetes:**:
+2. **Deploy Your Website to Kubernetes:**
 Kubernetes Deployment: Create a website-deployment.yaml defining a Deployment that uses the Docker image created in Step 1A. Ensure the Deployment specifies the necessary environment variables and mounts for the database connection.
 Outcome: The e-commerce web application is running on Kubernetes, with pods managed by the Deployment.
 
-3. **Expose Your Website:**:
+3. **Expose Your Website:**
 Service Creation: Define a website-service.yaml to create a Service of type LoadBalancer. This Service exposes your Deployment to the internet.
 Outcome: An accessible URL or IP address for your web application.
 
-4. **Open up NodePort in your Modem to allow this port to be accessed from outside of your  local network:**:
+4. **Open up NodePort in your Modem to allow this port to be accessed from outside of your  local network:**
 Accessing Modem Settings:
 Open the `website-service.yaml` file and note the NodePort service type. If you're using a cloud provider like EKS, you'd typically use LoadBalancer, but in our case, NodePort works fine. To access your modem's settings:
 
@@ -77,7 +77,7 @@ After configuring port forwarding, try accessing your website from outside your 
 Remember, if you encounter any issues or are unsure about any steps, don't hesitate to reach out to your ISP for assistance or do a quick online search using your modem's model for guidance.
 
 
-5. **Implement Configuration Management:**:
+5. **Implement Configuration Management:**
 Task: Add a feature toggle to the web application to enable a “dark mode” for the website.
 
 Modify the Web Application: Add a simple feature toggle in the application code (e.g., an environment variable FEATURE_DARK_MODE that enables a CSS dark theme).
@@ -85,11 +85,19 @@ Use ConfigMaps: Create a ConfigMap named feature-toggle-config with the data FEA
 Deploy ConfigMap: Apply the ConfigMap to your Kubernetes cluster.
 Update Deployment: Modify the website-deployment.yaml to include the environment variable from the ConfigMap.
 Outcome: Your website should now render in dark mode, demonstrating how ConfigMaps manage application features.
-6. **Scale Your Application:**:
+
+
+6. **Scale Your Application:**
 Task: Prepare for a marketing campaign expected to triple traffic.
 
-Evaluate Current Load: Use kubectl get pods to assess the current number of running pods.
-Scale Up: Increase replicas in your deployment or use 
+Evaluate Current Load: Use command below to assess the current number of running pods.
+
+```sh
+kubectl get pods 
+```
+
+Scale Up: Increase replicas in your deployment or use this command below:
+
 ```sh
 kubectl scale deployment/ecom-web --replicas=6
 ```
@@ -98,7 +106,7 @@ Monitor Scaling: Observe the deployment scaling up with kubectl get pods.
 Outcome: The application scales up to handle increased traffic, showcasing Kubernetes’ ability to manage application scalability dynamically.
 
 
-7. **Perform a Rolling Update:**:
+7. **Perform a Rolling Update:**
 Task: Update the website to include a new promotional banner for the marketing campaign.
 
 Update Application: Modify the web application’s code to include the promotional banner.
@@ -117,7 +125,7 @@ Verify Rollback: Ensure the website returns to its pre-update state without the 
 Outcome: The application’s stability is quickly restored, highlighting the importance of rollbacks in deployment strategies.
 
 
-9. **Autoscale Your Application:**:
+9. **Autoscale Your Application:**
 Task: Automate scaling based on CPU usage to handle unpredictable traffic spikes.
 
 Implement HPA: Create a Horizontal Pod Autoscaler targeting 50% CPU utilization, with a minimum of 2 and a maximum of 10 pods.
@@ -127,7 +135,7 @@ Monitor Autoscaling: Observe the HPA in action with kubectl get hpa.
 Outcome: The deployment automatically adjusts the number of pods based on CPU load, showcasing Kubernetes’ capability to maintain performance under varying loads.
 
 
-10. **Implement Liveness and Readiness Probes:**:
+10. **Implement Liveness and Readiness Probes:**
 Task: Ensure the web application is restarted if it becomes unresponsive and doesn’t receive traffic until ready.
 
 Define Probes: Add liveness and readiness probes to website-deployment.yaml, targeting an endpoint in your application that confirms its operational status.
@@ -136,7 +144,7 @@ Test Probes: Simulate failure scenarios (e.g., manually stopping the application
 Outcome: Kubernetes automatically restarts unresponsive pods and delays traffic to newly started pods until they’re ready, enhancing the application’s reliability and availability.
 
 
-11. **Utilize ConfigMaps and Secrets:**:
+11. **Utilize ConfigMaps and Secrets:**
 Task: Securely manage the database connection string and feature toggles without hardcoding them in the application.
 
 Create Secret and ConfigMap: For sensitive data like DB credentials, use a Secret. For non-sensitive data like feature toggles, use a ConfigMap.
@@ -144,7 +152,7 @@ Update Deployment: Reference the Secret and ConfigMap in the deployment to injec
 Outcome: Application configuration is externalized and securely managed, demonstrating best practices in configuration and secret management.
 
 
-12. **Document Your Process:**: 
+12. **Document Your Process:**
 Finalize Your Project Code: Ensure your project is complete and functioning as expected. Test all features locally and document all dependencies clearly.
 Create a Git Repository: Create a new repository on your preferred git hosting service (e.g., GitHub, GitLab, Bitbucket).
 Push Your Code to the Remote Repository
