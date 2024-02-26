@@ -5,7 +5,7 @@
 This is a remix to the Cloud Resume Challenge.
 A key prerequisite is that you must have a Cloud Provider to participate in the official challenge. So I took it upon my self to make this challenge more available to all who may not have the funds to do this on AWS or any Cloud Provider. Obviuosly, we wont have the ability to expose our service through a Loadbalancer thats handled by a cloud Provider, but If you have access to your home network modem, we can still expose our local application over the internet.
 
-###Setting the Stage
+Setting the Stage
 
 Imagine you are going to deploy an e-commerce website. It’s crucial to consider the challenges of modern web application deployment and how containerization and Kubernetes (K8s) offer compelling solutions:
 
