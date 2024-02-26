@@ -1,39 +1,41 @@
 # K8's Kadence Resume Challenge
 
-Intro
+##Intro
 
-This is a remix to the Cloud Resume Challenge.
-A key prerequisite is that you must have a Cloud Provider to participate in the official challenge. So I took it upon my self to make this challenge more available to all who may not have the funds to do this on AWS or any Cloud Provider. Obviuosly, we wont have the ability to expose our service through a Loadbalancer thats handled by a cloud Provider, but If you have access to your home network modem, we can still expose our local application over the internet.
+    This is a remix to the Cloud Resume Challenge.
+    A key prerequisite is that you must have a Cloud Provider to participate in the official challenge. So I took it upon my self to make this challenge more available to all who may not have the funds to do this on AWS or any Cloud Provider. Obviuosly, we wont have the ability to expose our service through a Loadbalancer thats handled by a cloud Provider, but If you have access to your home network modem, we can still expose our local application over the internet.
 
-Setting the Stage
+###Setting the Stage
+
+    Imagine you are going to deploy an e-commerce website. It’s crucial to consider the challenges of modern web application deployment and how containerization and Kubernetes (K8s) offer compelling solutions:
+    
+    Scalability: How can your application automatically adjust to fluctuating traffic?
+    Consistency: How do you ensure your application runs the same across all environments?
+    Availability: How can you update your application with zero downtime?
+    Containerization, using Docker, encapsulates your application and its environment, ensuring it runs consistently everywhere. Kubernetes, a container orchestration platform, automates deployment, scaling, and management, offering:
+    
+    Dynamic Scaling: Adjusts application resources based on demand.
+    Self-healing: Restarts failed containers and reschedules them on healthy nodes.
+    Seamless Updates & Rollbacks: Enables zero-downtime updates and easy rollbacks.
+    By leveraging Kubernetes and containerization for your challenge, you embrace a scalable, consistent, and resilient deployment strategy. This not only demonstrates your technical acumen but aligns with modern DevOps practices.
 
 
-Imagine you are going to deploy an e-commerce website. It’s crucial to consider the challenges of modern web application deployment and how containerization and Kubernetes (K8s) offer compelling solutions:
+## Challenge Guide
 
-Scalability: How can your application automatically adjust to fluctuating traffic?
-Consistency: How do you ensure your application runs the same across all environments?
-Availability: How can you update your application with zero downtime?
-Containerization, using Docker, encapsulates your application and its environment, ensuring it runs consistently everywhere. Kubernetes, a container orchestration platform, automates deployment, scaling, and management, offering:
-
-Dynamic Scaling: Adjusts application resources based on demand.
-Self-healing: Restarts failed containers and reschedules them on healthy nodes.
-Seamless Updates & Rollbacks: Enables zero-downtime updates and easy rollbacks.
-By leveraging Kubernetes and containerization for your challenge, you embrace a scalable, consistent, and resilient deployment strategy. This not only demonstrates your technical acumen but aligns with modern DevOps practices.
-
-
-### Challenge Guide
-Prerequisites
+###Prerequisites
 
 Before you embark on this journey, ensure you are equipped with:
 
-Docker and Kubernetes CLI Tools: Essential for building, pushing Docker images, and managing Kubernetes resources.
+- Docker and Kubernetes CLI Tools: Essential for building, pushing Docker images, and managing Kubernetes resources.
 
-GitHub Account: For version control and implementing CI/CD pipelines.
+- GitHub Account: For version control and implementing CI/CD pipelines.
 
-E-commerce Application Source Code and DB Scripts: Available at in this repo. Familiarize yourself with the application structure and database scripts provided.
+- E-commerce Application Source Code and DB Scripts: Available at in this repo. Familiarize yourself with the application structure and database scripts provided.
+
+###Lets Get Started
 
 1. **Containerize Your E-Commerce Website and Database:** 
-    A. Web Application Containerization
+A. Web Application Containerization
     Create a Dockerfile: Navigate to the root of the e-commerce application and create a Dockerfile. This file should instruct Docker to:
 ```sh
 Use php:7.4-apache as the base image.
@@ -47,8 +49,11 @@ Push it to Docker Hub with docker push yourdockerhubusername/ecom-web:v1.
 Outcome: Your web application Docker image is now available on Docker Hub.
 ```
 
-    B. Database Containerization
+    In order to do this navigate to the folder named `website`. Once you are in there you will see plenty of files. These files make up the website we are about to containerize. Lets open up the Dockerfile and read its contents. It starts with `From` which, is specifying what the Base Image we will be using. In our requirements it specifies use `php:7.4-apache` and to install mysqli extension for PHP by using the RUN command. And then expose port 80 to allow ingress traffic to the webserver. The `website-deployment.yaml` file will take care of the db connection string in env section. 
+
+B. Database Containerization
     Database Preparation: Instead of containerizing the database yourself, you’ll use the official MariaDB image. Prepare the database initialization script (`db-load-script.sql`) to be used with Kubernetes ConfigMaps or as an entrypoint script.
+    - Take a look at the `db-deployment.yaml` 
 
 2. **Deploy Your Website to Kubernetes:**
 Kubernetes Deployment: Create a website-deployment.yaml defining a Deployment that uses the Docker image created in Step 1A. Ensure the Deployment specifies the necessary environment variables and mounts for the database connection.
