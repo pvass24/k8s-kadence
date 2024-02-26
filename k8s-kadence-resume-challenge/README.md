@@ -7,17 +7,17 @@
 
 ###Setting the Stage
 
-    Imagine you are going to deploy an e-commerce website. It’s crucial to consider the challenges of modern web application deployment and how containerization and Kubernetes (K8s) offer compelling solutions:
-    
-    Scalability: How can your application automatically adjust to fluctuating traffic?
-    Consistency: How do you ensure your application runs the same across all environments?
-    Availability: How can you update your application with zero downtime?
-    Containerization, using Docker, encapsulates your application and its environment, ensuring it runs consistently everywhere. Kubernetes, a container orchestration platform, automates deployment, scaling, and management, offering:
-    
-    Dynamic Scaling: Adjusts application resources based on demand.
-    Self-healing: Restarts failed containers and reschedules them on healthy nodes.
-    Seamless Updates & Rollbacks: Enables zero-downtime updates and easy rollbacks.
-    By leveraging Kubernetes and containerization for your challenge, you embrace a scalable, consistent, and resilient deployment strategy. This not only demonstrates your technical acumen but aligns with modern DevOps practices.
+Imagine you are going to deploy an e-commerce website. It’s crucial to consider the challenges of modern web application deployment and how containerization and Kubernetes (K8s) offer compelling solutions:
+
+Scalability: How can your application automatically adjust to fluctuating traffic?
+Consistency: How do you ensure your application runs the same across all environments?
+Availability: How can you update your application with zero downtime?
+Containerization, using Docker, encapsulates your application and its environment, ensuring it runs consistently everywhere. Kubernetes, a container orchestration platform, automates deployment, scaling, and management, offering:
+
+Dynamic Scaling: Adjusts application resources based on demand.
+Self-healing: Restarts failed containers and reschedules them on healthy nodes.
+Seamless Updates & Rollbacks: Enables zero-downtime updates and easy rollbacks.
+By leveraging Kubernetes and containerization for your challenge, you embrace a scalable, consistent, and resilient deployment strategy. This not only demonstrates your technical acumen but aligns with modern DevOps practices.
 
 
 ## Challenge Guide
@@ -49,7 +49,7 @@ Push it to Docker Hub with docker push yourdockerhubusername/ecom-web:v1.
 Outcome: Your web application Docker image is now available on Docker Hub.
 ```
 
-    In order to do this navigate to the folder named `website`. Once you are in there you will see plenty of files. These files make up the website we are about to containerize. Lets open up the Dockerfile and read its contents. It starts with `From` which, is specifying what the Base Image we will be using. In our requirements it specifies use `php:7.4-apache` and to install mysqli extension for PHP by using the RUN command. And then expose port 80 to allow ingress traffic to the webserver. The `website-deployment.yaml` file will take care of the db connection string in env section. 
+In order to do this navigate to the folder named `website`. Once you are in there you will see plenty of files. These files make up the website we are about to containerize. Lets open up the Dockerfile and read its contents. It starts with `From` which, is specifying what the Base Image we will be using. In our requirements it specifies use `php:7.4-apache` and to install mysqli extension for PHP by using the RUN command. And then expose port 80 to allow ingress traffic to the webserver. The `website-deployment.yaml` file will take care of the db connection string in env section. 
 
 B. Database Containerization
     Database Preparation: Instead of containerizing the database yourself, you’ll use the official MariaDB image. Prepare the database initialization script (`db-load-script.sql`) to be used with Kubernetes ConfigMaps or as an entrypoint script.
