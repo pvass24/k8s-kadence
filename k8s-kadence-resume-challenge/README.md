@@ -22,7 +22,7 @@ By leveraging Kubernetes and containerization for your challenge, you embrace a 
 
 ## Challenge Guide
 
-###Prerequisites
+Prerequisites
 
 Before you embark on this journey, ensure you are equipped with:
 
