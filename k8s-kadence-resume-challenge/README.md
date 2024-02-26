@@ -32,7 +32,7 @@ Before you embark on this journey, ensure you are equipped with:
 
 - E-commerce Application Source Code and DB Scripts: Available at in this repo. Familiarize yourself with the application structure and database scripts provided.
 
-###Lets Get Started
+Lets Get Started
 
 1. **Containerize Your E-Commerce Website and Database:** 
 A. Web Application Containerization
