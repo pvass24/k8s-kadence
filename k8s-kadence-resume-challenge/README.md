@@ -49,27 +49,97 @@ Push it to Docker Hub with docker push yourdockerhubusername/ecom-web:v1.
 Outcome: Your web application Docker image is now available on Docker Hub.
 ```
 
-In order to do this navigate to the folder named `website`. Once you are in there you will see plenty of files. These files make up the website we are about to containerize. Lets open up the Dockerfile and read its contents. It starts with `From` which, is specifying what the Base Image we will be using. In our requirements it specifies use `php:7.4-apache` and to install mysqli extension for PHP by using the RUN command. And then expose port 80 to allow ingress traffic to the webserver. The `website-deployment.yaml` file will take care of the db connection string in env section. 
+In order to do this navigate to the folder named `website`. 
+
+```sh
+cd website
+```
+
+Once you are in there you will see plenty of files. These files make up the website we are about to containerize. Lets open up the Dockerfile and read its contents.
+
+```sh
+cat Dockerfile
+```
+
+ It starts with `From` which, is specifying what the Base Image we will be using. In our requirements it specifies use `php:7.4-apache` and to install mysqli extension for PHP by using the RUN command. And then expose port 80 to allow ingress traffic to the webserver. The `website-deployment.yaml` file will take care of the db connection string in env section.
+
+ Lets containerize the website and push it to our docker repo(Make sure to sign in to your docker account) 
+
+```sh
+docker build -t {yourdockerusername}/ecom-web:v1 .
+docker push {yourdockerusername}/ecom-web:v1
+```
+
+
+
+
 
 B. Database Containerization
     Database Preparation: Instead of containerizing the database yourself, you’ll use the official MariaDB image. Prepare the database initialization script (`db-load-script.sql`) to be used with Kubernetes ConfigMaps or as an entrypoint script.
-    - Take a look at the `db-deployment.yaml` 
+    
+
+    
+Now create a configmap using the `db-load-script.sql` file.
+
+```sh
+cd ..
+kubectl create configmap db-init-script --from-file=db-load-script.sql
+```
+
+
+ 
 
 2. **Deploy Your Website to Kubernetes:**
 Kubernetes Deployment: Create a website-deployment.yaml defining a Deployment that uses the Docker image created in Step 1A. Ensure the Deployment specifies the necessary environment variables and mounts for the database connection.
 Outcome: The e-commerce web application is running on Kubernetes, with pods managed by the Deployment.
 
+- Take a look at the `website-deployment.yaml` file. You need to modify the image to your image name(ex. image: pvass24/ecom-web:v1)
+
+```sh
+vi website-deployment.yaml
+```
+You will also notice that there are environment variables for our database. Since its a best practice to not hard code passwords in plain text were now going to create a secret that has the password to securely connect to our db.
+
+```sh
+kubectl create secret generic db-secret --from-literal=db-password=ecompassword
+```
+
+Create the deployment
+
+```sh
+kubectl create -f website-deployment.yaml
+```
+
 3. **Expose Your Website:**
-Service Creation: Define a website-service.yaml to create a Service of type LoadBalancer. This Service exposes your Deployment to the internet.
-Outcome: An accessible URL or IP address for your web application.
+Service Creation: Define a `website-service.yaml` to create a Service of type NodePort. This Service exposes your Deployment from your node's IP along with its random port range of 30000-32767.
+Outcome: An accessible IP address for your web application from outside the cluster.
+
+```sh
+kubectl create -f website-service.yaml
+```
+Create the db and expose the db with a ClusterIP Service:
+
+```sh
+kubectl create -f db-deployment.yaml
+kubectl create -f db-service.yaml
+```
+
 
 4. **Open up NodePort in your Modem to allow this port to be accessed from outside of your  local network:**
 Accessing Modem Settings:
-Open the `website-service.yaml` file and note the NodePort service type. If you're using a cloud provider like EKS, you'd typically use LoadBalancer, but in our case, NodePort works fine. To access your modem's settings:
+Run the command to get the nodePort 
+
+```sh
+kubectl get service ecom-web-service -o jsonpath={'.spec.ports[0].nodePort'}
+```
+
+ Make note of the NodePort. If you're using a cloud provider like EKS, you'd typically use LoadBalancer, but in our case, NodePort will be our alternative route. 
+ 
+ To access your modem's settings:
 
 Find your Gateway/Router IP address in your network settings.
 Enter this IP address into your web browser.
-Log in using the default credentials (usually found on your router).
+Log in using the default credentials (usually found on your router. Do not confuse this with your Wifi Password).
 Configuring Port Forwarding:
 Once logged in, look for the port forwarding section. Here, we'll expose the NodePort and your computer's IP address. If you're not sure about your computer's IP address:
 
