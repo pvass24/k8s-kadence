@@ -31,4 +31,4 @@ jobs:
       # Step 3: List S3 Buckets
       - name: List S3 Buckets
         run: |
-          aws s3 ls
+          aws s3 ls iampjv.co
