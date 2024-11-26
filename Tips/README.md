@@ -394,7 +394,7 @@ kubectl explain pod.spec.containers
 kubectl run infinite-logger \
   --image=busybox \
   --dry-run=client -o yaml \
-  -- /bin/sh -c 'while true; do mkdir -p /data/logs && echo "Current time: $(date)" >> /data/logs/output.log; sleep 5; done' > infinite-logger-pod.yaml
+  -- /bin/sh -c 'while true; do echo "Current time: $(date)" >> /data/logs/output.log; sleep 5; done' > infinite-logger-pod.yaml
 ```
 
 Then you'll need to add the volume configuration separately by editing the YAML file using vim. The final YAML should look like:
@@ -409,7 +409,7 @@ spec:
       image: busybox
       command: ["/bin/sh", "-c"]
       args:
-        - while true; do mkdir -p /data/logs && echo "Current time: $(date)" >> /data/logs/output.log; sleep 5; done
+        - while true; do echo "Current time: $(date)" >> /data/logs/output.log; sleep 5; done
       volumeMounts:
         - name: my-vol
           mountPath: /data
