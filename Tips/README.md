@@ -390,14 +390,15 @@ kubectl explain pod.spec.containers
 ```
 
 ## 9. Validate with `--dry-run`
-
+```bash
 kubectl run infinite-logger \
   --image=busybox \
   --dry-run=client -o yaml \
   -- /bin/sh -c 'while true; do mkdir -p /data/logs && echo "Current time: $(date)" >> /data/logs/output.log; sleep 5; done' > infinite-logger-pod.yaml
+```
 
 Then you'll need to add the volume configuration separately by editing the YAML file using vim. The final YAML should look like:
-
+```bash
 apiVersion: v1
 kind: Pod
 metadata:
@@ -415,11 +416,15 @@ spec:
   volumes:
     - name: my-vol
       emptyDir: {}
+```
 
 # Validate the YAML
+```bash
 kubectl apply -f infinite-logger-pod.yaml --dry-run=client
+```
 
 # Generate deployment with loop
+```bash
 kubectl create deployment loop-deployment \
   --image=busybox \
   --replicas=2 \
