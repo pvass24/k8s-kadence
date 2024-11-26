@@ -4,6 +4,8 @@
 
 The exam environment uses `vim` as the default editor. While you don't need to be an expert, these essential commands will help you work efficiently.
 
+---
+
 ### Key Commands
 
 #### Basic Operations
@@ -25,12 +27,121 @@ The exam environment uses `vim` as the default editor. While you don't need to b
 - **Indent**: Highlight lines (`Shift + V`) → Press `>`
 - **Unindent**: Highlight lines (`Shift + V`) → Press `<`
 
+---
+
+### Example: Debugging a Kubernetes Deployment with an Error
+
+Suppose you are working on a deployment YAML file and encounter an error when applying it:
+
+#### Deployment YAML (`deployment.yaml`)
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app-container
+        image: nginx:1.21.1
+        ports:
+        - containerPort: 80
+      - name: another-container
+        image: busybox:latest
+         ports:            # Intentional Error: Indentation mismatch
+        - containerPort: 8080
+
+## How to Debug Using `vim`
+
+### Step 1: Apply the YAML File
+Run the following command to apply the deployment YAML file:
+```bash
+kubectl apply -f deployment.yaml
+
+### Error Message Example
+If there's an error in the file, you might see a message like this:
+```plaintext
+error: error validating "deployment.yaml": error converting YAML to JSON: yaml: line 20: did not find expected key
+
+### Step 2: Open the File in `vim` and Jump to Line 20
+
+1. Open the file in `vim`:
+   ```bash
+   vim deployment.yaml
+
+Once the file is open, jump directly to line 20 by typing:
+```plaintext
+:20
+
+Fix your error(s) and save file with
+
+```plaintext
+:x\
+```
+
+`### Handling Immutable Resources When `vim` Creates a Temporary File
+
+When editing an immutable resource (e.g., PersistentVolumeClaim), Kubernetes might reject the changes, and `kubectl` saves the changes to a temporary file instead. You can use the temporary file to forcefully replace the resource.
+
+#### Example: Editing a PersistentVolumeClaim (PVC)
+
+1. Attempt to edit the PVC:
+   ```bash
+   kubectl edit pvc alpha-pvc -n alpha
+   ```
+
+1.  If the PVC is immutable, you might see an error like this:
+   
+    ```bash
+    error: persistentvolumeclaims "alpha-pvc" is invalid
+    spec: Forbidden: spec is immutable after creation except resources.requests and volumeAttributes for bound claims
+    A copy of your changes has been stored to "/tmp/kubectl-edit-3898228328.yaml"
+    error: Edit cancelled, no valid changes were saved.
+    ```
+
+3.  Locate the temporary file that `kubectl` created:
+    ```bash
+    /tmp/kubectl-edit-3898228328.yaml
+    ```
+
+4.  Forcefully replace the PVC using the temporary file:
+    ```bash
+    kubectl replace -f /tmp/kubectl-edit-3898228328.yaml --force --grace-period=0
+    ```
+
+* * * * *
+
+#### Explanation
+
+-   Immutable Resources: Certain Kubernetes resources, like PersistentVolumeClaims (PVCs), have immutable fields that cannot be updated directly.
+-   Temporary File: When you use `kubectl edit` on an immutable resource, `kubectl` saves the changes to a temporary file and aborts the edit.
+-   `kubectl replace`: Replaces the resource with the updated manifest.
+-   `--force`: Deletes the existing resource and recreates it.
+-   `--grace-period=0`: Ensures the resource is terminated immediately without waiting for the default grace period.
+
+* * * * *
+
+#### Best Practice
+
+If replacing a resource, ensure you understand the implications, as it will delete and recreate the resource. For PVCs, this might temporarily disconnect Pods relying on the PVC.
+
+
 ### Recommended `.vimrc` Configuration
 ```vim
 set expandtab
 set shiftwidth=2
 set softtabstop=2
 ```
+
+
 
 ## 2. Leverage Kubernetes DNS Patterns
 
@@ -45,23 +156,38 @@ Understanding DNS patterns is crucial for service communication across your clus
 
 ## 3. Master Pod and Service Communication
 
+Understanding how Pods communicate with each other and with external clients is crucial in Kubernetes. Services provide the abstraction needed to route traffic to the appropriate Pods seamlessly.
+
 ### Service Types
-- **ClusterIP**: Internal cluster communication (default)
-  - Access pattern: `service-name:port`
-  - Use case: Internal microservices
-- **NodePort**: External access through node IP
-  - Port range: 30000-32767
-  - Access pattern: `node-ip:node-port`
-- **LoadBalancer**: Cloud provider load balancer
-  - Automatically provisions external IP
-  - Best for production external access
-- **ExternalName**: CNAME record for external services
-  - Maps to external DNS
-  - Example: `db.example.com`
+
+- **ClusterIP** (Default):
+  - **Purpose:** Internal cluster communication.
+  - **Access Pattern:** `service-name:port`.
+  - **Use Case:** Facilitates communication between microservices within the cluster.
+  - **Example:** A frontend service accessing a backend service via its `ClusterIP`.
+
+- **NodePort**:
+  - **Purpose:** Expose a service on the node's IP at a static port.
+  - **Port Range:** 30000-32767.
+  - **Access Pattern:** `node-ip:node-port`.
+  - **Use Case:** Useful for simple external access to applications during development or testing.
+
+- **LoadBalancer**:
+  - **Purpose:** Provides an external IP via a cloud provider's load balancer.
+  - **Access Pattern:** `external-ip:port`.
+  - **Use Case:** Best for production deployments needing external traffic routing to the cluster.
+
+- **ExternalName**:
+  - **Purpose:** Maps a service to an external DNS record (e.g., external databases or APIs).
+  - **Access Pattern:** Uses a CNAME record to redirect traffic.
+  - **Example:** `db.example.com` as the external database endpoint.
+
+---
 
 ### Common Service Patterns
+
+#### ClusterIP Example
 ```yaml
-# Basic ClusterIP Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -71,10 +197,18 @@ spec:
   selector:
     app: myapp
   ports:
-    - port: 80
-      targetPort: 8080
+    - name: http         # Optional name for the port
+      port: 80           # Service port (used for communication)
+      targetPort: 8080   # Internal Pod container port
+### Key Details
+- **name**: A unique identifier for the port (useful when multiple ports are defined in a service).
+- **port**: The port the service exposes to other services or Pods in the cluster.
+- **targetPort**: The internal container port where the application listens. If omitted, it defaults to the value of `port`.
 
-# NodePort Example
+---
+
+### NodePort Example
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -84,19 +218,62 @@ spec:
   selector:
     app: web
   ports:
-    - port: 80
-      targetPort: 8080
-      nodePort: 30080
-```
+    - name: http
+      port: 80           # Service port
+      targetPort: 8080   # Internal Pod container port
+      nodePort: 30080    # Fixed external port on the node
+
+### Key Details
+- **nodePort**: Maps the service to a specific port on each node, making it accessible externally using the node's IP.
+- Naming the port with `name` is useful for distinguishing between multiple ports (e.g., `http` vs. `https`).
+
+---
 
 ### Quick Service Creation
-```bash
-# Create service for existing deployment
-kubectl expose deployment nginx --port=80 --target-port=8080
 
-# Create service with specific type
-kubectl expose pod mypod --port=80 --type=NodePort
-```
+You can easily create services for existing workloads using the `kubectl expose` command.
+
+```bash
+# Expose a Deployment with a ClusterIP service
+kubectl expose deployment nginx --name=nginx-svc --port=80 --target-port=8080 
+
+# Expose a Pod with a NodePort service
+kubectl expose pod mypod --name=mypod-svc --port=80 --type=NodePort
+
+### Key Notes
+- If `type` is not specified, `ClusterIP` is used by default.
+- The `targetPort` represents the internal port the container is listening on. If omitted, it defaults to the value of `port`.
+- Use the `--port` flag to define the service's exposed port.
+
+---
+
+### Naming Ports in Services
+
+Kubernetes allows naming ports with the `name` field.
+
+#### Benefits of Naming Ports
+- Useful when multiple ports are defined in the service.
+- Helps identify ports easily in configuration files.
+- Required when using protocols like HTTP/2 or gRPC, as some controllers (e.g., Ingress) rely on port names to route traffic.
+
+#### Example with Named Ports
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: multi-port-service
+spec:
+  type: ClusterIP
+  selector:
+    app: myapp
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+    - name: https
+      port: 443
+      targetPort: 8443
+
 
 ## 4. Master `jsonpath` for Kubernetes Queries
 
@@ -112,13 +289,64 @@ kubectl get pods -o jsonpath='{.items[*].metadata.name}'
 
 ## 5. Learn `awk` for Text Processing
 
+`awk` is a powerful tool for extracting and formatting text, making it highly useful when working with Kubernetes, Docker, or CI/CD pipelines.
+
+---
+
+### Common Examples
+
+#### Extract Image and Tag
+Use `awk` to combine the image repository and tag for a cleaner output:
 ```bash
-# Extract image and tag
 docker images | awk '{print $1 ":" $2}'
 
-# Filter and format output
+### Explanation:
+- **`$1`**: Refers to the first column (image repository).
+- **`$2`**: Refers to the second column (image tag).
+- Combines both with `:` to output `repository:tag`.
+
+---
+
+### Filter and Format Output
+
+Remove entries with `<none>` tags from the output:
+```bash
 crictl images | awk '$2 != "<none>" {print $1 ":" $2}'
-```
+
+### Advanced Example: Add Severity Count to Results
+
+In addition to filtering for `CRITICAL` vulnerabilities, you can count and display the number of vulnerabilities directly in the output.
+
+#### Example: Display CRITICAL Vulnerability Count
+```bash
+for i in $(crictl images | awk '$2 != "<none>" {print $1 ":" $2}'); do
+  echo "Scanning $i for CRITICAL vulnerabilities..."
+  critical_count=$(trivy image "$i" --severity CRITICAL | grep Total | awk '{print $2}')
+  echo "Total CRITICAL vulnerabilities for $i: $critical_count"
+done
+
+### Explanation:
+1. **`critical_count=$(...)`:**
+   - Captures the output of the `trivy` command filtered through `grep Total` and `awk '{print $2}'`, extracting the count of `CRITICAL` vulnerabilities from the `Total` line.
+2. **`echo "Total CRITICAL vulnerabilities for $i: $critical_count"`:**
+   - Outputs the repository:tag of the scanned image and the associated count of `CRITICAL` vulnerabilities.
+
+---
+
+### Example Output
+
+For three images (`nginx:latest`, `alpine:3.14`, and `busybox:latest`), the command might output:
+```plaintext
+Scanning nginx:latest for CRITICAL vulnerabilities...
+Total CRITICAL vulnerabilities for nginx:latest: 3
+
+Scanning alpine:3.14 for CRITICAL vulnerabilities...
+Total CRITICAL vulnerabilities for alpine:3.14: 0
+
+Scanning busybox:latest for CRITICAL vulnerabilities...
+Total CRITICAL vulnerabilities for busybox:latest: 2
+
+
 
 ## 6. Network Diagnostics with `netcat`
 
