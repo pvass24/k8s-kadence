@@ -297,13 +297,58 @@ kubectl get pods -o jsonpath='{.items[*].metadata.name}'
 
 #### Extract Image and Tag
 Use `awk` to combine the image repository and tag for a cleaner output:
+
 ```bash
-docker images | awk '{print $1 ":" $2}'
+crictl images
+
+Output:
+
+IMAGE                                     TAG                 IMAGE ID            SIZE
+docker.io/bitnami/nginx                   latest              d42eb6c65d81d       67.1MB
+docker.io/kodekloud/webapp-color          latest              32a1ce4c22f21       31.8MB
+docker.io/library/busybox                 <none>              27a71e19c9562       2.17MB
+docker.io/library/busybox                 latest              517b897a6a831       2.17MB
+docker.io/library/nginx                   1.13                ae513a47849c8       44.6MB
+docker.io/library/nginx                   1.14                295c7be079025       44.7MB
+docker.io/library/nginx                   1.16                dfcfd8e9a5d38       51MB
+docker.io/library/nginx                   1.17                9beeba249f3ee       51MB
+docker.io/library/nginx                   alpine              a5967740120f9       22.8MB
+docker.io/library/nginx                   latest              3b25b682ea82b       73MB
+docker.io/library/ubuntu                  latest              59ab366372d56       29.8MB
+
+```bash
+crictl images | awk '{print $1 ":" $2}'
+
+Output:
+
+IMAGE:TAG
+docker.io/bitnami/nginx:latest
+docker.io/kodekloud/webapp-color:latest
+docker.io/library/busybox:<none>
+docker.io/library/busybox:latest
+docker.io/library/nginx:1.13
+docker.io/library/nginx:1.14
+docker.io/library/nginx:1.16
+docker.io/library/nginx:1.17
+docker.io/library/nginx:alpine
+docker.io/library/nginx:latest
+
 
 ### Explanation:
 - **`$1`**: Refers to the first column (image repository).
 - **`$2`**: Refers to the second column (image tag).
 - Combines both with `:` to output `repository:tag`.
+
+Even further, you can add tail -n +2 to remove the IMAGE:TAG header
+
+```bash
+crictl images | tail -n +2 | awk '{print $1 ":" $2}'
+
+Output:
+
+docker.io/bitnami/nginx:latest
+docker.io/kodekloud/webapp-color:latest
+...
 
 ---
 
@@ -312,40 +357,69 @@ docker images | awk '{print $1 ":" $2}'
 Remove entries with `<none>` tags from the output:
 ```bash
 crictl images | awk '$2 != "<none>" {print $1 ":" $2}'
+```
 
-### Advanced Example: Add Severity Count to Results
+### Scanning Filtered Images for CRITICAL Vulnerabilities Using `trivy`
 
-In addition to filtering for `CRITICAL` vulnerabilities, you can count and display the number of vulnerabilities directly in the output.
+This command filters images with names containing `nginx`, scans them for CRITICAL vulnerabilities using `trivy`, and prints only the "Total" line from the scan output.
 
-#### Example: Display CRITICAL Vulnerability Count
+#### Command:
 ```bash
-for i in $(crictl images | awk '$2 != "<none>" {print $1 ":" $2}'); do
-  echo "Scanning $i for CRITICAL vulnerabilities..."
-  critical_count=$(trivy image "$i" --severity CRITICAL | grep Total | awk '{print $2}')
-  echo "Total CRITICAL vulnerabilities for $i: $critical_count"
+for i in $(crictl images | awk '/nginx/ {print $1 ":" $2}'); do
+  echo "Scanning $i for CRITICAL vulnerabilities...";
+  trivy image $i --severity CRITICAL --quiet | grep Total;
 done
+```
+
+* * * * *
 
 ### Explanation:
-1. **`critical_count=$(...)`:**
-   - Captures the output of the `trivy` command filtered through `grep Total` and `awk '{print $2}'`, extracting the count of `CRITICAL` vulnerabilities from the `Total` line.
-2. **`echo "Total CRITICAL vulnerabilities for $i: $critical_count"`:**
-   - Outputs the repository:tag of the scanned image and the associated count of `CRITICAL` vulnerabilities.
 
----
+1.  Filter Images by Name:
 
-### Example Output
+    -   The `awk '/nginx/ {print $1 ":" $2}'` portion filters the images whose name contains the word `nginx` in the output of `crictl images`.
+    -   It combines the first column (image repository) and the second column (image tag) into `repository:tag` format.
+2.  Loop Through Filtered Images:
 
-For three images (`nginx:latest`, `alpine:3.14`, and `busybox:latest`), the command might output:
-```plaintext
-Scanning nginx:latest for CRITICAL vulnerabilities...
-Total CRITICAL vulnerabilities for nginx:latest: 3
+    -   The `for i in $(...)` loop iterates over each filtered image name and assigns it to the variable `$i`.
+3.  Scan Each Image:
 
-Scanning alpine:3.14 for CRITICAL vulnerabilities...
-Total CRITICAL vulnerabilities for alpine:3.14: 0
+    -   The `trivy image $i --severity CRITICAL --quiet` command runs a vulnerability scan for the current image:
+        -   `--severity CRITICAL`: Limits the scan to CRITICAL vulnerabilities.
+        -   `--quiet`: Suppresses non-essential output, such as logs and informational messages.
+4.  Filter Scan Results:
 
-Scanning busybox:latest for CRITICAL vulnerabilities...
-Total CRITICAL vulnerabilities for busybox:latest: 2
+    -   The `grep Total` command filters the output to include only the line containing the word `Total`, which summarizes vulnerability counts.
 
+* * * * *
+
+### Example Output:
+
+For images like `nginx:latest` and `nginx:alpine`, the command might produce output like this:
+
+```bash
+`Scanning docker.io/nginx:latest for CRITICAL vulnerabilities...
+Total: 3 (CRITICAL: 1, HIGH: 2)
+
+Scanning docker.io/nginx:alpine for CRITICAL vulnerabilities...
+Total: 0 (CRITICAL: 0, HIGH: 0)`
+```
+* * * * *
+
+### Key Notes:
+
+-   Filtering by Image Name:
+
+    -   The `/nginx/` filter in `awk` ensures that only images with "nginx" in their name are included in the loop.
+    -   You can replace `nginx` with any other keyword to filter specific images.
+-   Focused Output:
+
+    -   By using `--quiet` and `grep Total`, the command ensures that only relevant results are displayed.
+-   Custom Filters:
+
+    -   Modify the `awk` filter to match different image patterns or exclude specific tags (e.g., `<none>`).
+
+This approach combines flexibility and simplicity, making it efficient for scanning targeted images in your environment.
 
 
 ## 6. Network Diagnostics with `netcat`
