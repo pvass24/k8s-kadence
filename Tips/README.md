@@ -26,6 +26,7 @@ The exam environment uses `vim` as the default editor. While you don't need to b
 #### YAML Formatting
 - **Indent**: Highlight lines (`Shift + V`) → Press `>`
 - **Unindent**: Highlight lines (`Shift + V`) → Press `<`
+- Press `.` to continue in that direction.
 
 ---
 
