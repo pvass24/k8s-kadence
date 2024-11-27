@@ -278,15 +278,226 @@ spec:
 
 ## 4. Master `jsonpath` for Kubernetes Queries
 
-Extract specific information from Kubernetes objects efficiently:
+# Practical Guide to Kubernetes JSONPath Queries
+
+This guide shows how to extract and format information from Kubernetes objects using JSONPath and custom columns, with real-world examples and their outputs.
+
+## 1. Understanding jq paths - The JSONPath Cheat Code
+
+One of the most challenging aspects of using JSONPath with Kubernetes is knowing the correct path to the data you want. While you could read the API documentation or inspect raw JSON output, there's a better way: `jq -c paths`.
+
+The `jq -c paths` command is like having a map of every possible path in your JSON data. Here's why it's so powerful:
+
+### Basic Usage
+```bash
+# Get ALL possible paths in a pod's JSON
+$ kubectl get pod nginx-pod -o json | jq -c paths
+["apiVersion"]
+["kind"]
+["metadata","annotations"]
+["metadata","creationTimestamp"]
+["metadata","labels","app"]
+["metadata","name"]
+["metadata","namespace"]
+["spec","containers",0,"image"]
+["spec","containers",0,"name"]
+["spec","containers",0,"ports",0,"containerPort"]
+["status","conditions",0,"lastTransitionTime"]
+["status","conditions",0,"status"]
+["status","phase"]
+["status","podIP"]
+```
+
+### Finding Specific Paths
+```bash
+# Find paths related to containers
+$ kubectl get pod nginx-pod -o json | jq -c paths | grep "containers"
+["spec","containers",0,"image"]
+["spec","containers",0,"name"]
+["spec","containers",0,"ports",0,"containerPort"]
+["spec","containers",0,"resources","limits","cpu"]
+
+# Find paths related to status
+$ kubectl get pod nginx-pod -o json | jq -c paths | grep "status"
+["status","phase"]
+["status","podIP"]
+["status","conditions",0,"status"]
+```
+
+### Converting to JSONPath
+The paths from `jq` can be easily converted to kubectl's JSONPath format:
+- jq path: `["spec","containers",0,"image"]`
+- kubectl JSONPath: `{.spec.containers[0].image}`
+
+### Pro Tips
+1. Use `grep` to filter for specific fields you're interested in
+2. The numbers (like `0`) in paths indicate array indices
+3. Save common path queries as aliases:
+```bash
+alias k8s-paths='kubectl get pod -o json | jq -c paths | grep'
+# Usage: k8s-paths "cpu"
+```
+
+## 2. Discovering Available Fields
+
+Before writing queries, you can explore available fields:
 
 ```bash
-# Get Pod image name
-kubectl get pod my-pod -o jsonpath='{.spec.containers[0].image}'
-
-# List all Pod names
-kubectl get pods -o jsonpath='{.items[*].metadata.name}'
+# Find all available paths for a pod
+$ kubectl get pod nginx-pod -o json | jq -c paths | grep "containers"
+["spec","containers",0,"image"]
+["spec","containers",0,"name"]
+["spec","containers",0,"ports",0,"containerPort"]
+["spec","containers",0,"resources","limits","cpu"]
+["spec","containers",0,"resources","limits","memory"]
 ```
+
+## 3. Basic JSONPath Queries
+
+### Example 1: Get Pod Images
+```bash
+# List the image used by each pod
+$ kubectl get pod -o jsonpath='{.items[*].spec.containers[0].image}'
+nginx:1.19 redis:6.0 postgres:13
+```
+
+### Example 2: Get Pod Names and Status
+```bash
+# Get pod names with their status
+$ kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.phase}{"\n"}{end}'
+web-pod-1    Running
+cache-pod    Running
+db-pod       Pending
+```
+
+## 4. Custom Columns
+
+### Example 1: Basic Pod Information
+```bash
+$ kubectl get pods -o custom-columns=\
+NAME:.metadata.name,\
+STATUS:.status.phase,\
+IP:.status.podIP
+
+NAME        STATUS    IP
+web-pod-1   Running   10.244.0.23
+cache-pod   Running   10.244.0.24
+db-pod      Pending   <none>
+```
+
+### Example 2: Container Resource Requests
+```bash
+$ kubectl get pods -o custom-columns=\
+POD:.metadata.name,\
+CPU:.spec.containers[0].resources.requests.cpu,\
+MEMORY:.spec.containers[0].resources.requests.memory
+
+POD        CPU    MEMORY
+web-pod-1  200m   256Mi
+cache-pod  500m   1Gi
+db-pod     1      2Gi
+```
+
+## 5. Advanced Filtering
+
+### Example 1: Pods with Specific Labels
+```bash
+# Find all pods with app=web label
+$ kubectl get pods -o jsonpath='{.items[?(@.metadata.labels.app=="web")].metadata.name}'
+web-pod-1 web-pod-2 web-pod-3
+```
+
+### Example 2: Containers Using Specific Images
+```bash
+# List pods running nginx
+$ kubectl get pods -o custom-columns=\
+POD:.metadata.name,\
+IMAGE:.spec.containers[0].image | grep nginx
+
+POD        IMAGE
+web-pod-1  nginx:1.19
+web-pod-2  nginx:1.19
+```
+
+## 6. Real-World Examples
+
+### Example 1: Resource Usage Overview
+```bash
+$ kubectl get pods -o custom-columns=\
+NAME:.metadata.name,\
+CPU_REQ:.spec.containers[0].resources.requests.cpu,\
+CPU_LIM:.spec.containers[0].resources.limits.cpu,\
+MEM_REQ:.spec.containers[0].resources.requests.memory,\
+MEM_LIM:.spec.containers[0].resources.limits.memory
+
+NAME        CPU_REQ  CPU_LIM  MEM_REQ  MEM_LIM
+web-pod-1   200m     500m     256Mi    512Mi
+cache-pod   500m     1        1Gi      2Gi
+db-pod      1        2        2Gi      4Gi
+```
+
+### Example 2: Network Configuration
+```bash
+$ kubectl get pods -o custom-columns=\
+NAME:.metadata.name,\
+IP:.status.podIP,\
+NODE:.spec.nodeName,\
+PORTS:.spec.containers[*].ports[*].containerPort
+
+NAME        IP            NODE        PORTS
+web-pod-1   10.244.0.23  worker-1    [80,443]
+cache-pod   10.244.0.24  worker-2    [6379]
+db-pod      <none>       worker-1    [5432]
+```
+
+## 7. Practical Tips
+
+### Tip 1: Save Common Queries as Aliases
+Add to your `~/.bashrc` or `~/.zshrc`:
+```bash
+# Alias for pod resource usage
+alias k8s-resources='kubectl get pods -o custom-columns=\
+NAME:.metadata.name,\
+CPU:.spec.containers[0].resources.requests.cpu,\
+MEM:.spec.containers[0].resources.requests.memory'
+
+# Usage
+$ k8s-resources
+NAME        CPU    MEM
+web-pod-1   200m   256Mi
+cache-pod   500m   1Gi
+```
+
+### Tip 2: Combining with grep
+```bash
+# Find pods with high CPU requests
+$ kubectl get pods -o custom-columns=NAME:.metadata.name,CPU:.spec.containers[0].resources.requests.cpu | grep "1"
+db-pod      1
+```
+
+## Common Patterns for Reference
+
+1. Getting container information:
+   ```bash
+   .spec.containers[0].image           # First container's image
+   .spec.containers[*].image           # All container images
+   .spec.containers[?(@.name=="web")]  # Container named "web"
+   ```
+
+2. Status information:
+   ```bash
+   .status.phase                       # Pod phase
+   .status.conditions[*].type          # All condition types
+   .status.containerStatuses[0].ready  # First container ready status
+   ```
+
+3. Metadata and labels:
+   ```bash
+   .metadata.labels.app               # Value of label "app"
+   .metadata.annotations             # All annotations
+   .metadata.ownerReferences[0].kind # Owner kind (e.g., ReplicaSet)
+   ```
+
 
 ## 5. Learn `awk` for Text Processing
 
