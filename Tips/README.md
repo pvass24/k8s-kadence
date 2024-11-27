@@ -348,6 +348,8 @@ Output:
 
 docker.io/bitnami/nginx:latest
 docker.io/kodekloud/webapp-color:latest
+docker.io/library/busybox:<none>
+docker.io/library/busybox:latest
 ...
 
 ---
