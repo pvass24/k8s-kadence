@@ -194,7 +194,7 @@ IP
 
 1. Looking up a service:
 ```bash
-$ kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- bash
+$ kubectl run tmp-shell --rm -it --image nicolaka/netshoot -- bash
 $ nslookup mysql.databases
 Server:    10.96.0.10
 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
@@ -205,7 +205,7 @@ Address 1: 10.96.45.10 mysql.databases.svc.cluster.local
 
 2. Looking up a pod:
 ```bash
-$ kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- bash
+$ kubectl run tmp-shell --rm -it --image nicolaka/netshoot -- bash
 $ nslookup 10-244-2-45.default.pod.cluster.local
 Server:    10.96.0.10
 Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
@@ -249,7 +249,7 @@ pod-ip-with-dashes → pod-ip-with-dashes.namespace.pod → pod-ip-with-dashes.n
 
 1. Verify DNS resolution from within a pod:
 ```bash
-$ kubectl run dns-test --rm -i --tty --image nicolaka/netshoot -- bash
+$ kubectl run dns-test --rm -it --image nicolaka/netshoot -- bash
 $ dig mysql.databases.svc.cluster.local
 ```
 
