@@ -142,8 +142,128 @@ set softtabstop=2
 ```
 
 
+## 2. Kubernetes DNS Patterns and Service Discovery
 
-## 2. Leverage Kubernetes DNS Patterns
+Understanding DNS patterns is crucial for service and pod communication across your cluster. Kubernetes DNS follows specific hierarchical patterns and includes special handling for pod IPs.
+
+### Service DNS Patterns
+
+1. Same Namespace: 
+```bash
+service-name
+# Example: mysql
+```
+
+2. Cross Namespace: 
+```bash
+service-name.namespace
+# Example: mysql.databases
+```
+
+3. Fully Qualified Domain Name (FQDN): 
+```bash
+service-name.namespace.svc.cluster.local
+# Example: mysql.databases.svc.cluster.local
+```
+
+### Pod DNS Resolution
+
+Pods use a different DNS pattern than services. To resolve a pod by DNS:
+
+1. Get the pod's IP:
+```bash
+# Method 1: Using kubectl
+$ kubectl get pod nginx-pod -o jsonpath='{.status.podIP}'
+10.244.2.45
+
+# Method 2: Using custom columns
+$ kubectl get pod nginx-pod -o custom-columns=IP:.status.podIP
+IP
+10.244.2.45
+```
+
+2. Convert IP to DNS format:
+- Replace dots with dashes in the IP
+- Append the namespace and cluster domain
+```bash
+# Format: pod-ip-with-dashes.namespace.pod.cluster.local
+10-244-2-45.default.pod.cluster.local
+```
+
+### DNS Lookup Examples
+
+1. Looking up a service:
+```bash
+$ kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- bash
+$ nslookup mysql.databases
+Server:    10.96.0.10
+Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      mysql.databases
+Address 1: 10.96.45.10 mysql.databases.svc.cluster.local
+```
+
+2. Looking up a pod:
+```bash
+$ kubectl run tmp-shell --rm -i --tty --image nicolaka/netshoot -- bash
+$ nslookup 10-244-2-45.default.pod.cluster.local
+Server:    10.96.0.10
+Address 1: 10.96.0.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      10-244-2-45.default.pod.cluster.local
+Address 1: 10.244.2.45
+```
+
+### Practical Examples
+
+1. Get pod IP and convert to DNS name:
+```bash
+# One-liner to get pod DNS name
+$ POD_IP=$(kubectl get pod nginx-pod -o jsonpath='{.status.podIP}') && echo ${POD_IP//./-}.default.pod.cluster.local
+10-244-2-45.default.pod.cluster.local
+```
+
+2. Create an alias for quick pod DNS lookup:
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+alias k8s-pod-dns='POD_IP=$(kubectl get pod $1 -o jsonpath="{.status.podIP}") && echo ${POD_IP//./-}.$2.pod.cluster.local'
+
+# Usage: k8s-pod-dns <pod-name> <namespace>
+$ k8s-pod-dns nginx-pod default
+10-244-2-45.default.pod.cluster.local
+```
+
+### DNS Resolution Hierarchy
+
+1. Services:
+```
+service-name → service-name.namespace → service-name.namespace.svc → service-name.namespace.svc.cluster.local
+```
+
+2. Pods:
+```
+pod-ip-with-dashes → pod-ip-with-dashes.namespace.pod → pod-ip-with-dashes.namespace.pod.cluster.local
+```
+
+### Troubleshooting DNS
+
+1. Verify DNS resolution from within a pod:
+```bash
+$ kubectl run dns-test --rm -i --tty --image nicolaka/netshoot -- bash
+$ dig mysql.databases.svc.cluster.local
+```
+
+2. Check DNS service status:
+```bash
+$ kubectl get pods -n kube-system -l k8s-app=kube-dns
+$ kubectl logs -n kube-system -l k8s-app=kube-dns
+```
+
+💡 **Pro Tips**:
+- Always start with the simplest DNS pattern and expand as needed
+- Use temp debug pods with networking tools (like nicolaka/netshoot) for DNS troubleshooting
+- Remember that pod DNS names are based on their IPs, not their kubernetes pod names
+- Service DNS names are more stable than pod DNS names since pod IPs change on restart
 
 Understanding DNS patterns is crucial for service communication across your cluster.
 
