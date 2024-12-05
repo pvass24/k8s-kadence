@@ -950,7 +950,7 @@ AppArmor is a Linux security module that restricts a program's capabilities base
 1. **Check Existing Profiles**:
    List all available AppArmor profiles:
    ```bash
-    aa-status
+    apparmor_status
    ```
 
 2. **Create a Custom AppArmor Profile**:
