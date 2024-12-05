@@ -85,7 +85,7 @@ Once the file is open, jump directly to line 20 by typing:
 Fix your error(s) and save file with
 
 ```plaintext
-:x\
+:x
 ```
 
 `### Handling Immutable Resources When `vim` Creates a Temporary File
@@ -485,7 +485,7 @@ nginx:1.19 redis:6.0 postgres:13
 ##### Example 2: Get Pod Names and Status
 ```bash
 # Get pod names with their status
-$ kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.phase}{"\n"}{end}'
+$ kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"t"}{.status.phase}{"n"}{end}'
 web-pod-1    Running
 cache-pod    Running
 db-pod       Pending
@@ -495,9 +495,9 @@ db-pod       Pending
 
 ##### Example 1: Basic Pod Information
 ```bash
-$ kubectl get pods -o custom-columns=\
-NAME:.metadata.name,\
-STATUS:.status.phase,\
+$ kubectl get pods -o custom-columns=
+NAME:.metadata.name,
+STATUS:.status.phase,
 IP:.status.podIP
 
 NAME        STATUS    IP
@@ -508,9 +508,9 @@ db-pod      Pending   <none>
 
 ##### Example 2: Container Resource Requests
 ```bash
-$ kubectl get pods -o custom-columns=\
-POD:.metadata.name,\
-CPU:.spec.containers[0].resources.requests.cpu,\
+$ kubectl get pods -o custom-columns=
+POD:.metadata.name,
+CPU:.spec.containers[0].resources.requests.cpu,
 MEMORY:.spec.containers[0].resources.requests.memory
 
 POD        CPU    MEMORY
@@ -531,8 +531,8 @@ web-pod-1 web-pod-2 web-pod-3
 ##### Example 2: Containers Using Specific Images
 ```bash
 # List pods running nginx
-$ kubectl get pods -o custom-columns=\
-POD:.metadata.name,\
+$ kubectl get pods -o custom-columns=
+POD:.metadata.name,
 IMAGE:.spec.containers[0].image | grep nginx
 
 POD        IMAGE
@@ -544,11 +544,11 @@ web-pod-2  nginx:1.19
 
 ##### Example 1: Resource Usage Overview
 ```bash
-$ kubectl get pods -o custom-columns=\
-NAME:.metadata.name,\
-CPU_REQ:.spec.containers[0].resources.requests.cpu,\
-CPU_LIM:.spec.containers[0].resources.limits.cpu,\
-MEM_REQ:.spec.containers[0].resources.requests.memory,\
+$ kubectl get pods -o custom-columns=
+NAME:.metadata.name,
+CPU_REQ:.spec.containers[0].resources.requests.cpu,
+CPU_LIM:.spec.containers[0].resources.limits.cpu,
+MEM_REQ:.spec.containers[0].resources.requests.memory,
 MEM_LIM:.spec.containers[0].resources.limits.memory
 
 NAME        CPU_REQ  CPU_LIM  MEM_REQ  MEM_LIM
@@ -559,10 +559,10 @@ db-pod      1        2        2Gi      4Gi
 
 ##### Example 2: Network Configuration
 ```bash
-$ kubectl get pods -o custom-columns=\
-NAME:.metadata.name,\
-IP:.status.podIP,\
-NODE:.spec.nodeName,\
+$ kubectl get pods -o custom-columns=
+NAME:.metadata.name,
+IP:.status.podIP,
+NODE:.spec.nodeName,
 PORTS:.spec.containers[*].ports[*].containerPort
 
 NAME        IP            NODE        PORTS
@@ -577,9 +577,9 @@ db-pod      <none>       worker-1    [5432]
 Add to your `~/.bashrc` or `~/.zshrc`:
 ```bash
 # Alias for pod resource usage
-alias k8s-resources='kubectl get pods -o custom-columns=\
-NAME:.metadata.name,\
-CPU:.spec.containers[0].resources.requests.cpu,\
+alias k8s-resources='kubectl get pods -o custom-columns=
+NAME:.metadata.name,
+CPU:.spec.containers[0].resources.requests.cpu,
 MEM:.spec.containers[0].resources.requests.memory'
 
 # Usage
@@ -788,9 +788,9 @@ metadata:
   name: my-serviceaccount
 ```
 
-## **8. Use \`kubectl explain\` for Quick Reference**
+## **8. Use `kubectl explain` for Quick Reference**
 
-The \`kubectl explain\` command is an excellent tool for understanding Kubernetes resource structures and their fields. It provides detailed explanations of resource specifications and valid configurations.
+The `kubectl explain` command is an excellent tool for understanding Kubernetes resource structures and their fields. It provides detailed explanations of resource specifications and valid configurations.
 
 ---
 
@@ -801,22 +801,22 @@ The \`kubectl explain\` command is an excellent tool for understanding Kubernete
    kubectl explain pod.spec
    ```
    - **Explanation**:
-     - Displays a high-level overview of the fields under \`pod.spec\`.
+     - Displays a high-level overview of the fields under `pod.spec`.
 
 2. **Deep Dive into Container Configuration**:
    ```bash
    kubectl explain pod.spec.containers
    ```
    - **Explanation**:
-     - Shows detailed information about the \`containers\` field, including subfields like \`image\`, \`ports\`, \`env\`, and more.
+     - Shows detailed information about the `containers` field, including subfields like `image`, `ports`, `env`, and more.
 
 ---
 
-### **Recursive Option (\`-r\`)**
+### **Recursive Option (`-r`)**
 
-To explore nested fields and their subfields all at once, use the \`-r\` flag:
+To explore nested fields and their subfields all at once, use the `-r` flag:
 
-1. **View All Fields Under \`pod.spec\`**:
+1. **View All Fields Under `pod.spec`**:
    ```bash
    kubectl explain pod.spec -r
    ```
@@ -832,15 +832,15 @@ To explore nested fields and their subfields all at once, use the \`-r\` flag:
 
 ---
 
-### **Why Use \`-r\`?**
+### **Why Use `-r`?**
 - Saves time by showing the full structure of a resource.
-- Useful for understanding deeply nested configurations like \`volumes\`, \`env\`, or \`livenessProbe\`.
+- Useful for understanding deeply nested configurations like `volumes`, `env`, or `livenessProbe`.
 
 ---
 
 ### **Examples of Output**
 
-**Without \`-r\`**:
+**Without `-r`**:
 ```plaintext
 KIND:     Pod
 VERSION:  v1
@@ -851,7 +851,7 @@ DESCRIPTION:
      List of containers belonging to the pod.
 ```
 
-**With \`-r\`**:
+**With `-r`**:
 ```plaintext
 KIND:     Pod
 VERSION:  v1
@@ -874,9 +874,9 @@ FIELDS:
 
 ---
 
-### **Tips for Using \`kubectl explain\`**
+### **Tips for Using `kubectl explain`**
 1. **Explore Any Resource**:
-   Replace \`pod\` with any resource type (e.g., \`deployment\`, \`service\`, \`pvc\`):
+   Replace `pod` with any resource type (e.g., `deployment`, `service`, `pvc`):
    ```bash
    kubectl explain deployment.spec
    ```
@@ -884,17 +884,17 @@ FIELDS:
 2. **Quickly Verify Valid Fields**:
    Use it to confirm field names, especially when writing YAML manifests manually.
 
-3. **Pair with \`-r\` for Learning**:
+3. **Pair with `-r` for Learning**:
    The recursive option is particularly helpful when you're unfamiliar with a resource's full structure.
 
-By using \`kubectl explain\` with the \`-r\` flag, you can dive deeper into Kubernetes resources and gain a better understanding of how to configure them effectively.
+By using `kubectl explain` with the `-r` flag, you can dive deeper into Kubernetes resources and gain a better understanding of how to configure them effectively.
 
 
 ## 9. Validate with `--dry-run`
 ```bash
-kubectl run infinite-logger \
-  --image=busybox \
-  --dry-run=client -o yaml \
+kubectl run infinite-logger 
+  --image=busybox 
+  --dry-run=client -o yaml 
   -- /bin/sh -c 'while true; do echo "Current time: $(date)" >> /data/logs/output.log; sleep 5; done' > infinite-logger-pod.yaml
 ```
 
@@ -926,26 +926,259 @@ kubectl apply -f infinite-logger-pod.yaml --dry-run=client
 
 # Generate deployment with loop
 ```bash
-kubectl create deployment loop-deployment \
-  --image=busybox \
-  --replicas=2 \
-  --dry-run=client -o yaml \
+kubectl create deployment loop-deployment 
+  --image=busybox 
+  --replicas=2 
+  --dry-run=client -o yaml 
   -- /bin/sh -c 'while true; do echo "Pod $HOSTNAME running"; sleep 10; done' > loop-deployment.yaml
 ```
 
-## 10. File Organization Best Practices
+## **10. Securing Workloads with Tools like AppArmor, gVisor, and Seccomp**
+
+Securing workloads involves applying additional layers of protection to containers and their interactions with the host system.
+
+---
+
+### **AppArmor**
+
+AppArmor is a Linux security module that restricts a program's capabilities based on a set of predefined profiles.
+
+1. **Check Existing Profiles**:
+   List all available AppArmor profiles:
+   ```bash
+   sudo aa-status
+   ```
+
+2. **Create a Custom AppArmor Profile**:
+   Write a custom AppArmor profile and save it as `nginx-profile`:
+   ```bash
+   nano nginx-profile
+   ```
+
+   Example Profile:
+   ```plaintext
+   #include <tunables/global>
+
+   profile nginx-profile flags=(attach_disconnected) {
+       # Allow nginx to read and write files
+       file,
+       # Allow network access
+       network,
+   }
+   ```
+
+3. **Load the Profile**:
+   Use `apparmor_parser` to load the profile into the kernel:
+   ```bash
+   sudo apparmor_parser -r nginx-profile
+   ```
+
+4. **Apply the Profile to a Pod**:
+   Add an AppArmor annotation in your Pod spec:
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: nginx-pod
+     annotations:
+       container.apparmor.security.beta.kubernetes.io/nginx: localhost/nginx-profile
+   spec:
+     containers:
+     - name: nginx
+       image: nginx
+   ```
+
+5. **Validate Profile Enforcement**:
+   Confirm the profile is attached to the container:
+   ```bash
+   kubectl exec nginx-pod -- cat /proc/self/attr/current
+   ```
+
+---
+
+### **gVisor**
+
+gVisor provides a sandboxed environment for containers, adding an isolation layer between workloads and the host kernel.
+
+1. **Run a Container with gVisor**:
+   Specify the runtime when launching a container:
+   ```bash
+   docker run --runtime=runsc nginx
+   ```
+
+2. **Enable gVisor in Kubernetes**:
+   Update the Kubernetes runtime class:
+   ```yaml
+   apiVersion: node.k8s.io/v1
+   kind: RuntimeClass
+   metadata:
+     name: gvisor
+   handler: runsc
+   ```
+
+---
+
+### **Seccomp**
+
+Seccomp limits system calls available to containerized applications, reducing the attack surface.
+
+1. **Default Kubernetes Profiles**:
+   Kubernetes provides built-in profiles:
+   - `RuntimeDefault`: A default, secure profile.
+   - `Unconfined`: No restrictions.
+
+2. **Apply a Seccomp Profile**:
+   Use the `securityContext` field in your Pod spec:
+   ```yaml
+   securityContext:
+     seccompProfile:
+       type: RuntimeDefault
+   ```
+
+3. **Custom Seccomp Profiles**:
+   Mount a custom profile and reference it:
+   ```yaml
+   securityContext:
+     seccompProfile:
+       type: Localhost
+       localhostProfile: profiles/my-custom-seccomp.json
+   ```
+
+4. **Validate Seccomp Enforcement**:
+   ```bash
+   kubectl exec <pod-name> -- grep Seccomp /proc/self/status
+   ```
+
+---
+
+## **11. Using Falco for Runtime Security**
+
+Falco monitors system calls and detects abnormal behavior in your Kubernetes cluster.
+
+### **Log Locations**
+To confirm the logging destination, inspect Falco's configuration file:
+```bash
+cat /etc/falco/falco.yaml | grep -i log
+```
+
+---
+
+## **12. Auditing Kubernetes Clusters**
+
+Auditing records all interactions with the Kubernetes API server.
+
+### **Enable Auditing**
+
+1. **Create an Audit Policy**:
+   Save this as `audit-policy.yaml`:
+   ```yaml
+   apiVersion: audit.k8s.io/v1
+   kind: Policy
+   rules:
+   - level: Metadata
+     resources:
+     - group: ""
+       resources: ["pods", "services"]
+   ```
+
+2. **Configure API Server**:
+   Update `kube-apiserver.yaml`:
+   ```yaml
+   spec:
+     containers:
+     - name: kube-apiserver
+       volumeMounts:
+       - mountPath: /etc/kubernetes/audit-policy.yaml
+         name: audit-policy
+         readOnly: true
+       - mountPath: /var/log/kubernetes/audit.log
+         name: audit-log
+     volumes:
+     - name: audit-policy
+       hostPath:
+         path: /etc/kubernetes/audit-policy.yaml
+         type: File
+     - name: audit-log
+       hostPath:
+         path: /var/log/kubernetes/audit.log
+         type: FileOrCreate
+   ```
+
+---
+
+## **13. Leveraging kube-bench for CIS Compliance**
+
+kube-bench assesses your cluster against the Kubernetes CIS benchmark.
+
+### **Does kube-bench Need to Be Installed Per Node?**
+Yes, kube-bench typically needs to be run on each node individually because it checks configuration files and system settings that are specific to each node, such as the control plane components on master nodes or kubelet configurations on worker nodes.
+
+1. **Install kube-bench**:
+   ```bash
+   curl -L https://github.com/aquasecurity/kube-bench/releases/latest/download/kube-bench-$(uname -s)-$(uname -m) -o kube-bench
+   chmod +x kube-bench
+   sudo mv kube-bench /usr/local/bin
+   ```
+
+2. **Run kube-bench**:
+   For master nodes:
+   ```bash
+   kube-bench --config-dir /etc/kube-bench/cfg --config /etc/kube-bench/cfg/config.yaml master
+   ```
+
+   For worker nodes:
+   ```bash
+   kube-bench --config-dir /etc/kube-bench/cfg --config /etc/kube-bench/cfg/config.yaml node
+   ```
+
+---
+
+## **14. Troubleshooting Tips**
+
+### **Using kubectl**
+1. **View Pod Logs**:
+   ```bash
+   kubectl logs <pod-name>
+   ```
+
+---
+
+### **Using journalctl**
+1. **View Systemd Logs for Kubernetes**:
+   ```bash
+   journalctl -u kubelet
+   ```
+
+---
+
+## **15. Pod-to-Pod Encryption with Cilium**
+
+Cilium supports pod-to-pod encryption using IPsec or WireGuard.
+
+### **Enable IPsec**:
+Follow the [Cilium IPsec guide](https://docs.cilium.io/en/stable/security/network/encryption-ipsec/).
+
+### **Enable WireGuard**:
+Refer to the [Cilium WireGuard guide](https://docs.cilium.io/en/stable/security/network/encryption-wireguard/).
+
+---
+
+
+### Time Management
+
+## 16. File Organization Best Practices
 
 - Use descriptive names: `question1-deployment.yaml`
 - Keep backups: `cp file.yaml file-backup.yaml`
 - Organize by resource type or question number
 
-## 11. Debug YAML Efficiently
+## 17. Debug YAML Efficiently
 
 1. Validate syntax with `--dry-run`
 2. Use vim to jump to error lines
 3. Reapply after fixes
 
-## 12. Time-Saving Aliases
+## 18. Time-Saving Aliases
 
 ```bash
 alias k=kubectl
@@ -953,7 +1186,7 @@ alias kgp='kubectl get pods'
 alias kaf='kubectl apply -f'
 ```
 
-## 13. Exam Strategy
+## 19. Exam Strategy
 
 ### Time Management
 - Start with easier questions
