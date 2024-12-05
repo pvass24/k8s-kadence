@@ -946,13 +946,13 @@ AppArmor is a Linux security module that restricts a program's capabilities base
 1. **Check Existing Profiles**:
    List all available AppArmor profiles:
    ```bash
-   sudo aa-status
+    aa-status
    ```
 
 2. **Create a Custom AppArmor Profile**:
    Write a custom AppArmor profile and save it as `nginx-profile`:
    ```bash
-   nano nginx-profile
+   vim nginx-profile
    ```
 
    Example Profile:
@@ -970,7 +970,7 @@ AppArmor is a Linux security module that restricts a program's capabilities base
 3. **Load the Profile**:
    Use `apparmor_parser` to load the profile into the kernel:
    ```bash
-   sudo apparmor_parser -r nginx-profile
+    apparmor_parser -r nginx-profile
    ```
 
 4. **Apply the Profile to a Pod**:
@@ -1117,7 +1117,7 @@ Yes, kube-bench typically needs to be run on each node individually because it c
    ```bash
    curl -L https://github.com/aquasecurity/kube-bench/releases/latest/download/kube-bench-$(uname -s)-$(uname -m) -o kube-bench
    chmod +x kube-bench
-   sudo mv kube-bench /usr/local/bin
+    mv kube-bench /usr/local/bin
    ```
 
 2. **Run kube-bench**:
