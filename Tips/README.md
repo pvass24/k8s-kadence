@@ -996,25 +996,51 @@ AppArmor is a Linux security module that restricts a program's capabilities base
 
 ---
 
-### **gVisor**
+### **Using gVisor in Kubernetes**
 
-gVisor provides a sandboxed environment for containers, adding an isolation layer between workloads and the host kernel.
+1. **Enable gVisor in Your Environment**:
+   - Install the gVisor runtime (`runsc`) on each Kubernetes node.
+   - Follow [gVisor installation documentation](https://gvisor.dev/docs/user_guide/install/) for your system.
 
-1. **Run a Container with gVisor**:
-   Specify the runtime when launching a container:
-   ```bash
-   docker run --runtime=runsc nginx
-   ```
-
-2. **Enable gVisor in Kubernetes**:
-   Update the Kubernetes runtime class:
-   ```yaml
+2. **Configure RuntimeClass**:
+   Create a `RuntimeClass` for gVisor:
+   \`\`\`yaml
    apiVersion: node.k8s.io/v1
    kind: RuntimeClass
    metadata:
      name: gvisor
    handler: runsc
-   ```
+   \`\`\`
+
+3. **Deploy a Pod Using gVisor**:
+   To use gVisor, specify the `RuntimeClassName` in your Pod spec:
+   \`\`\`yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: nginx-gvisor
+   spec:
+     runtimeClassName: gvisor
+     containers:
+     - name: nginx
+       image: nginx:latest
+       ports:
+       - containerPort: 80
+   \`\`\`
+
+4. **Verify gVisor is Applied**:
+   - Check the Pod's runtime using:
+     \`\`\`bash
+     kubectl describe pod nginx-gvisor | grep -i "runtime"
+     \`\`\`
+   - Confirm that `runsc` is listed as the runtime.
+
+5. **Simulate Workload Isolation**:
+   gVisor restricts system calls. Test the container's isolation by attempting to access a restricted kernel feature:
+   \`\`\`bash
+   kubectl exec nginx-gvisor -- dmesg
+   \`\`\`
+   This command should fail due to gVisor's sandboxing.
 
 ---
 
