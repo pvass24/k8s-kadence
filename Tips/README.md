@@ -950,7 +950,7 @@ AppArmor is a Linux security module that restricts a program's capabilities base
 1. **Check Existing Profiles**:
    List all available AppArmor profiles:
    ```bash
-   sudo aa-status
+    aa-status
    ```
 
 2. **Create a Custom AppArmor Profile**:
@@ -969,7 +969,7 @@ AppArmor is a Linux security module that restricts a program's capabilities base
 3. **Load the Profile**:
    Use `apparmor_parser` to load the profile into the kernel:
    ```bash
-   sudo apparmor_parser -r k8s-apparmor-example-deny-write
+    apparmor_parser -r k8s-apparmor-example-deny-write
    ```
 
 4. **Apply the Profile to a Pod**:
