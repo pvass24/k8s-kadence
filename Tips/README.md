@@ -1315,22 +1315,200 @@ Refer to the [Cilium WireGuard guide](https://docs.cilium.io/en/stable/security/
 
 ---
 
+## **16. Upgrading the Control Plane and Worker Nodes**
+
+This section outlines the exact steps to upgrade your Kubernetes cluster based on the official [Kubernetes documentation](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/).
+
+---
+
+### **1. Upgrade the Control Plane**
+
+#### **Step 1: Prepare for the Upgrade**
+1. **Check the Current Version**:
+   ```bash
+   kubectl version --short
+   ```
+
+2. **Ensure Swap is Disabled**:
+   Kubernetes requires swap to be disabled. Verify and disable swap if necessary:
+   ```bash
+   sudo swapoff -a
+   ```
+
+3. **Verify Cluster Health**:
+   ```bash
+   kubectl get nodes
+   kubectl get pods --all-namespaces
+   ```
+
+#### **Step 2: Upgrade `kubeadm`**
+Install the newer `kubeadm` version:
+   ```bash
+   sudo apt-get update && sudo apt-get install -y kubeadm=<desired-version>
+   ```
+
+Check the installed version:
+   ```bash
+   kubeadm version
+   ```
+
+#### **Step 3: Plan the Upgrade**
+Run the following command to confirm the versions and steps:
+   ```bash
+   kubeadm upgrade plan
+   ```
+
+#### **Step 4: Upgrade the Control Plane**
+Upgrade the control plane to the desired version:
+   ```bash
+   sudo kubeadm upgrade apply v<desired-version>
+   ```
+
+This command will:
+- Upgrade `kube-apiserver`, `kube-controller-manager`, `kube-scheduler`, and other components.
+- Ensure etcd is upgraded (if necessary).
+
+#### **Step 5: Upgrade `kubelet` and `kubectl`**
+Upgrade `kubelet` and `kubectl` to match the control plane:
+   ```bash
+   sudo apt-get update && sudo apt-get install -y kubelet=<desired-version> kubectl=<desired-version>
+   sudo systemctl restart kubelet
+   ```
+
+#### **Step 6: Verify the Control Plane Upgrade**
+Confirm all components are running correctly:
+   ```bash
+   kubectl get pods -n kube-system
+   ```
+
+---
+
+### **2. Upgrade Worker Nodes**
+
+#### **Step 1: Upgrade `kubeadm` on the Worker Node**
+Install the desired version of `kubeadm` on the worker node:
+   ```bash
+   sudo apt-get update && sudo apt-get install -y kubeadm=<desired-version>
+   ```
+
+#### **Step 2: Upgrade the Worker Node**
+Run the upgrade command to apply the configuration:
+   ```bash
+   sudo kubeadm upgrade node
+   ```
+
+#### **Step 3: Upgrade `kubelet` and `kubectl`**
+Install the compatible versions of `kubelet` and `kubectl`:
+   ```bash
+   sudo apt-get update && sudo apt-get install -y kubelet=<desired-version> kubectl=<desired-version>
+   sudo systemctl restart kubelet
+   ```
+
+#### **Step 4: Verify the Node**
+Confirm the worker node has been upgraded:
+   ```bash
+   kubectl get nodes
+   ```
+
+---
+
+### **3. Validate the Cluster**
+1. Ensure all nodes are running the correct version:
+   ```bash
+   kubectl get nodes
+   ```
+
+2. Verify workloads are running:
+   ```bash
+   kubectl get pods --all-namespaces
+   ```
+
+---
+
+## **17. Backing Up and Restoring etcd**
+
+etcd is the key-value store for Kubernetes. It’s essential to back it up regularly and know how to restore it in case of an issue.
+
+### **1. Backup etcd**
+
+#### **Step 1: Backup the Data**
+Use `etcdctl` to take a snapshot:
+   ```bash
+   ETCDCTL_API=3 etcdctl snapshot save backup.db 
+     --endpoints=https://127.0.0.1:2379 
+     --cacert=/etc/kubernetes/pki/etcd/ca.crt 
+     --cert=/etc/kubernetes/pki/etcd/server.crt 
+     --key=/etc/kubernetes/pki/etcd/server.key
+   ```
+
+#### **Step 2: Verify the Snapshot**
+Confirm the snapshot was saved:
+   ```bash
+   ETCDCTL_API=3 etcdctl snapshot status backup.db
+   ```
+
+---
+
+### **2. Restore etcd**
+
+#### **Step 1: Stop etcd**
+Stop the etcd process before restoring:
+   ```bash
+   sudo systemctl stop etcd
+   ```
+
+#### **Step 2: Restore the Snapshot**
+Use the following command to restore the backup:
+   ```bash
+   ETCDCTL_API=3 etcdctl snapshot restore backup.db 
+     --data-dir=/var/lib/etcd-from-backup
+   ```
+
+#### **Step 3: Update etcd Configuration**
+Edit the etcd configuration file (`/etc/kubernetes/manifests/etcd.yaml`) to point to the restored data directory:
+   ```yaml
+   spec:
+     containers:
+     - command:
+       - --data-dir=/var/lib/etcd-from-backup
+   ```
+
+#### **Step 4: Restart etcd**
+Start the etcd process:
+   ```bash
+   sudo systemctl start etcd
+   ```
+
+#### **Step 5: Verify etcd**
+Check the cluster health:
+   ```bash
+   ETCDCTL_API=3 etcdctl endpoint health 
+     --endpoints=https://127.0.0.1:2379 
+     --cacert=/etc/kubernetes/pki/etcd/ca.crt 
+     --cert=/etc/kubernetes/pki/etcd/server.crt 
+     --key=/etc/kubernetes/pki/etcd/server.key
+   ```
+
+---
+
+By following these instructions, you can perform a smooth Kubernetes upgrade and maintain the integrity of your etcd datastore.
+
 
 ### Time Management
 
-## 16. File Organization Best Practices
+## 18. File Organization Best Practices
 
 - Use descriptive names: `question1-deployment.yaml`
 - Keep backups: `cp file.yaml file-backup.yaml`
 - Organize by resource type or question number
 
-## 17. Debug YAML Efficiently
+## 19. Debug YAML Efficiently
 
 1. Validate syntax with `--dry-run`
 2. Use vim to jump to error lines
 3. Reapply after fixes
 
-## 18. Time-Saving Aliases
+## 20. Time-Saving Aliases
 
 ```bash
 alias k=kubectl
@@ -1338,7 +1516,7 @@ alias kgp='kubectl get pods'
 alias kaf='kubectl apply -f'
 ```
 
-## 19. Exam Strategy
+## 21. Exam Strategy
 
 ### Time Management
 - Start with easier questions
