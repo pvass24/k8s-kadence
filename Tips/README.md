@@ -943,56 +943,64 @@ Securing workloads involves applying additional layers of protection to containe
 
 AppArmor is a Linux security module that restricts a program's capabilities based on a set of predefined profiles.
 
+---
+
+#### **Using AppArmor in Kubernetes**
+
 1. **Check Existing Profiles**:
    List all available AppArmor profiles:
    ```bash
-    aa-status
+   sudo aa-status
    ```
 
 2. **Create a Custom AppArmor Profile**:
-   Write a custom AppArmor profile and save it as `nginx-profile`:
-   ```bash
-   vim nginx-profile
-   ```
-
-   Example Profile:
+   Write a custom AppArmor profile and save it as `k8s-apparmor-example-deny-write`:
    ```plaintext
    #include <tunables/global>
 
-   profile nginx-profile flags=(attach_disconnected) {
-       # Allow nginx to read and write files
-       file,
-       # Allow network access
-       network,
+   profile k8s-apparmor-example-deny-write flags=(attach_disconnected) {
+       # Deny write access
+       deny /bin/** w,
+       deny /usr/bin/** w,
+       deny /usr/sbin/** w,
    }
    ```
 
 3. **Load the Profile**:
    Use `apparmor_parser` to load the profile into the kernel:
    ```bash
-    apparmor_parser -r nginx-profile
+   sudo apparmor_parser -r k8s-apparmor-example-deny-write
    ```
 
 4. **Apply the Profile to a Pod**:
-   Add an AppArmor annotation in your Pod spec:
+   Use the `securityContext` field to apply the AppArmor profile in your Pod spec:
    ```yaml
    apiVersion: v1
    kind: Pod
    metadata:
-     name: nginx-pod
-     annotations:
-       container.apparmor.security.beta.kubernetes.io/nginx: localhost/nginx-profile
+     name: hello-apparmor
    spec:
+     securityContext:
+       appArmorProfile:
+         type: Localhost
+         localhostProfile: k8s-apparmor-example-deny-write
      containers:
-     - name: nginx
-       image: nginx
+     - name: hello
+       image: busybox:1.28
+       command: [ "sh", "-c", "echo 'Hello AppArmor!' && sleep 1h" ]
    ```
 
 5. **Validate Profile Enforcement**:
-   Confirm the profile is attached to the container:
+   Confirm the profile is applied and enforced:
    ```bash
-   kubectl exec nginx-pod -- cat /proc/self/attr/current
+   kubectl exec hello-apparmor -- sh -c 'echo test > /usr/bin/testfile'
    ```
+   The above command should fail due to the write restriction enforced by the AppArmor profile.
+
+---
+
+By correctly defining and applying AppArmor profiles using `securityContext`, you can enforce fine-grained security policies on your Kubernetes workloads, enhancing the protection against unauthorized actions.
+
 
 ---
 
@@ -1004,17 +1012,17 @@ AppArmor is a Linux security module that restricts a program's capabilities base
 
 2. **Configure RuntimeClass**:
    Create a `RuntimeClass` for gVisor:
-   \`\`\`yaml
+   ```yaml
    apiVersion: node.k8s.io/v1
    kind: RuntimeClass
    metadata:
      name: gvisor
    handler: runsc
-   \`\`\`
+   ```
 
 3. **Deploy a Pod Using gVisor**:
    To use gVisor, specify the `RuntimeClassName` in your Pod spec:
-   \`\`\`yaml
+   ```yaml
    apiVersion: v1
    kind: Pod
    metadata:
@@ -1026,20 +1034,20 @@ AppArmor is a Linux security module that restricts a program's capabilities base
        image: nginx:latest
        ports:
        - containerPort: 80
-   \`\`\`
+   ```
 
 4. **Verify gVisor is Applied**:
    - Check the Pod's runtime using:
-     \`\`\`bash
+     ```bash
      kubectl describe pod nginx-gvisor | grep -i "runtime"
-     \`\`\`
+     ```
    - Confirm that `runsc` is listed as the runtime.
 
 5. **Simulate Workload Isolation**:
    gVisor restricts system calls. Test the container's isolation by attempting to access a restricted kernel feature:
-   \`\`\`bash
+   ```bash
    kubectl exec nginx-gvisor -- dmesg
-   \`\`\`
+   ```
    This command should fail due to gVisor's sandboxing.
 
 ---
