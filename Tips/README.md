@@ -12,10 +12,11 @@ The exam environment uses `vim` as the default editor. While you don't need to b
 - **Open a File**: `vim file.yaml`
 - **Enter Insert Mode**: Press `i`
 - **Exit Insert Mode**: Press `Esc`
+- **Undo Changes**: Press `u`
 - **Save and Exit**: 
   - `:wq` (write and quit)
   - `:x` (save and exit - only writes if changes were made)
-- **Undo Changes**: Press `u`
+
 
 > 💡 **Tip**: `:x` is slightly more efficient than `:wq` because it only writes to the file if you've made changes. This can be faster when you're just viewing files.
 
