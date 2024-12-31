@@ -1583,3 +1583,151 @@ alias kaf='kubectl apply -f'
 - Review and learn from mistakes
 
 > 🎯 **Remember**: Regular practice with these tools and techniques is key to exam success!
+
+## 22. Terminal Navigation and Productivity Tips
+
+These keyboard shortcuts and commands will significantly speed up your terminal work during the exam.
+
+## Command History and Execution
+
+### Previous Command Execution
+- `!!` - Repeat the last command
+  ```bash
+  $ kubectl get pods           # Original command
+  $ !!                        # Runs: kubectl get pods
+  $ sudo !!                   # Runs: sudo kubectl get pods
+  ```
+
+### Command History Search
+- `Ctrl + R` - Reverse recursive search
+  ```bash
+  # Press Ctrl + R and start typing
+  (reverse-i-search)`kube': kubectl get pods
+  # Press Ctrl + R again to cycle through matches
+  (reverse-i-search)`kube': kubectl describe pod nginx
+  ```
+  
+  💡 **Pro Tips for Recursive Search**:
+  - Type unique parts of the command for better matches
+  - Use `Ctrl + G` to cancel the search
+  - Use `Ctrl + J` to copy the command without executing
+  - Press `→` (right arrow) to edit the command before executing
+  - Multiple `Ctrl + R` presses cycle through command history
+  
+- `history` - Show command history
+- `!n` - Execute command number n from history
+  ```bash
+  $ history
+  1234  kubectl get pods
+  1235  kubectl get svc
+  $ !1234                     # Runs: kubectl get pods
+  ```
+
+> 🎯 **Exam Tip**: `Ctrl + R` is much faster than scrolling through history. Practice finding commands by their unique parts rather than memorizing history numbers.
+
+## Cursor Navigation
+
+### Line Navigation
+- `Ctrl + A` - Move cursor to beginning of line
+- `Ctrl + E` - Move cursor to end of line
+- `Alt + B` - Move cursor back one word
+- `Alt + F` - Move cursor forward one word
+- `Ctrl + XX` - Toggle between current cursor position and start of line
+
+### Text Deletion
+- `Ctrl + U` - Delete from cursor to start of line
+- `Ctrl + K` - Delete from cursor to end of line
+- `Ctrl + W` - Delete the word before the cursor
+- `Alt + D` - Delete the word after the cursor
+- `Ctrl + D` - Delete character under cursor (like Delete key)
+- `Ctrl + H` - Delete character before cursor (like Backspace)
+
+## Terminal Screen Control
+- `Ctrl + L` - Clear screen (same as `clear` command)
+- `Ctrl + S` - Freeze terminal output
+- `Ctrl + Q` - Resume terminal output
+- `Ctrl + Z` - Suspend current process (return to shell)
+- `fg` - Resume suspended process
+
+## Quick Directory Navigation
+- `cd -` - Go to previous directory
+- `pushd directory` - Change directory and save location
+- `popd` - Return to last saved directory location
+
+## Command Line Editing
+- `Ctrl + T` - Swap current character with previous
+- `Alt + T` - Swap current word with previous
+- `Alt + U` - Capitalize from cursor to end of word
+- `Alt + L` - Lowercase from cursor to end of word
+- `Alt + C` - Capitalize letter under cursor and move to end of word
+
+## Pro Tips
+1. **Multiple Command Execution**
+   ```bash
+   # Use && to run commands sequentially if previous succeeds
+   kubectl create namespace test && kubectl create -f pod.yaml -n test
+
+   # Use ; to run commands sequentially regardless of success
+   kubectl get pods ; kubectl get svc
+   ```
+
+2. **Command Substitution**
+   ```bash
+   # Use $() for command substitution
+   kubectl delete pod $(kubectl get pod -l app=nginx -o jsonpath='{.items[0].metadata.name}')
+   ```
+
+3. **Quick Comment/Uncomment**
+   - `Ctrl + A` then `#` - Comment out current line
+   - Remove `#` to uncomment
+
+4. **Working with Shell Variables**
+
+   ### Temporary Variables (Session Only)
+   ```bash
+   # Store common parameters
+   ns="--namespace=kubernetes-dashboard"
+   # Use in commands
+   kubectl get pods $ns
+   ```
+
+   ### Permanent Variables (Persists Across Sessions)
+   ```bash
+   # Method 1: Echo and source in one command (Recommended for exam)
+   echo 'export do="--dry-run=client -o yaml"' >> ~/.bashrc && source ~/.bashrc
+   
+   # Method 2: Edit directly (if you need to make multiple changes)
+   vim ~/.bashrc
+   
+   # Method 3: Individual steps
+   # Add to ~/.bashrc or ~/.bash_profile
+   echo 'export ns="--namespace=kubernetes-dashboard"' >> ~/.bashrc
+   # Apply changes to current session
+   source ~/.bashrc
+   ```
+
+   💡 **Environment Variable Tips**:
+   - Use `export` to make variables available to child processes
+   - Common files for permanent variables:
+     - `~/.bashrc`: User's bash configuration (most common)
+     - `~/.bash_profile`: Login shell configuration
+     - `~/.profile`: Non-bash-specific configuration
+   - Use `printenv` or `env` to list all environment variables
+   - Use `echo $VARIABLE` to check a specific variable's value
+   
+   Example permanent kubectl aliases:
+   ```bash
+   # Add to ~/.bashrc
+   export do="--dry-run=client -o yaml"    # Quick YAML generation
+   export now="--grace-period=0 --force"   # Quick deletion
+   
+   # Usage
+   kubectl run nginx --image=nginx $do > pod.yaml
+   kubectl delete pod mypod $now
+   ```
+
+💡 **Exam Tips**:
+- Practice these shortcuts before the exam
+- Pay special attention to cursor navigation (Ctrl+A, Ctrl+E) and deletion (Ctrl+U, Ctrl+K)
+- Master command history with `!!` and `sudo !!` for quick command repetition
+- Remember `Ctrl + R` for searching command history - vital for long commands
