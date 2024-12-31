@@ -1254,7 +1254,7 @@ Example rule to monitor shell execution:
 
 3. **Inspect Runtime Logs**:
    ```bash
-   journalctl -u falco
+   journalctl -fu falco
    ```
 
 ---
