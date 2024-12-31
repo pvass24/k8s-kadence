@@ -1332,23 +1332,85 @@ Yes, kube-bench typically needs to be run on each node individually because it c
 
 ---
 
-## **14. Troubleshooting Tips**
+## **14. Kubernetes Troubleshooting Guide**
 
-### **Using kubectl**
-1. **View Pod Logs**:
-   ```bash
-   kubectl logs <pod-name>
-   ```
+### Pod and Deployment Troubleshooting
 
----
+### Start With Pod Status and Logs
+```bash
+# Check pod status and logs
+kubectl describe pod <pod-name> -n <namespace>
+kubectl logs <pod-name> -n <namespace>
+kubectl logs <pod-name> -n <namespace> --previous  # If pod crashed
 
-### **Using journalctl**
-1. **View Systemd Logs for Kubernetes**:
-   ```bash
-   journalctl -u kubelet
-   ```
+# Check recent events
+kubectl get events -n <namespace> | grep <pod-name>
+```
 
----
+### Direct Pod Logs Access (when kubectl fails)
+```bash
+# List ALL pod log directories with timestamps
+ls -lrt /var/log/pods/<namespace>_<pod-name>*   # newest last
+
+# View latest log
+cat /var/log/pods/<namespace>_<pod-name>    # [TAB]
+
+# Follow latest log
+tail -f /var/log/pods/<namespace>_<pod-name>    # [TAB]
+```
+
+### Container Runtime Investigation
+```bash
+# List containers
+sudo crictl ps | grep <pod-name>
+sudo crictl ps -a              # Include stopped containers
+
+# Get container logs
+sudo crictl logs <container_id>
+```
+
+## API Server Troubleshooting
+
+### Start Here - Kubelet Perspective
+```bash
+# Check API server issues from kubelet
+journalctl -u kubelet | grep -i kube-api | grep -i error
+
+# Follow in real-time
+journalctl -fu kubelet | grep -i kube-api | grep -i error
+```
+
+### Alternative Checks
+```bash
+# Check syslog for API server errors
+cat /var/log/syslog | grep -i kube-api | grep -i error
+
+# Check API server pod status
+kubectl describe pod kube-apiserver-$(hostname) -n kube-system
+```
+
+### Direct Log Access
+```bash
+# List ALL API server log directories with timestamps
+ls -lrt /var/log/pods/kube-system_kube-apiserver-*    # -rt sorts by time, newest last
+
+# Or for clearer timestamp view
+ls -lrth /var/log/pods/kube-system_kube-apiserver-*   # -h for human-readable sizes
+
+# Use tab completion to select latest log
+cat /var/log/pods/kube-system_kube-apiserver    # [TAB]
+
+# Or follow the latest
+tail -f /var/log/pods/kube-system_kube-apiserver    # [TAB]
+```
+
+💡 **Pro Tips**: 
+- For pod issues: Start with kubectl describe and logs
+- Use ls -lrt to sort by time (newest at bottom)
+- If API server is restarting, you'll see new directories appear
+- Use crictl when kubectl isn't responding
+- Always check previous logs for crashed pods
+- Static pods (like API server) are in /etc/kubernetes/manifests/
 
 ## **15. Pod-to-Pod Encryption with Cilium**
 
