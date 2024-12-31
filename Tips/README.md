@@ -1371,21 +1371,27 @@ sudo crictl logs <container_id>
 
 ## API Server Troubleshooting
 
-### Start Here - Kubelet Perspective
+### When kubectl isn't working
 ```bash
-# Check API server issues from kubelet
+# If you see: "The connection to the server <IP>:6443 was refused"
+
+# Step 1: Check API server process
+sudo crictl ps | grep kube-apiserver
+
+# Step 2: Check kubelet logs for API server issues
 journalctl -u kubelet | grep -i kube-api | grep -i error
 
-# Follow in real-time
-journalctl -fu kubelet | grep -i kube-api | grep -i error
+# Step 3: Direct check of API server logs
+ls -lrt /var/log/pods/kube-system_kube-apiserver-*    # newest last
+cat /var/log/pods/kube-system_kube-apiserver-         # [TAB] to complete latest
 ```
 
-### Alternative Checks
+### Additional API Server Checks
 ```bash
-# Check syslog for API server errors
+# Check syslog for errors
 cat /var/log/syslog | grep -i kube-api | grep -i error
 
-# Check API server pod status
+# Once kubectl is working, check API server pod
 kubectl describe pod kube-apiserver-$(hostname) -n kube-system
 ```
 
