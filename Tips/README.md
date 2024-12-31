@@ -1,6 +1,6 @@
 # Best Tips for Acing CKA, CKAD, and CKS Exams
 
-## 1. Master Basic `vim` for File Editing
+## **1. Master Basic `vim` for File Editing**
 
 The exam environment uses `vim` as the default editor. While you don't need to be an expert, these essential commands will help you work efficiently.
 
@@ -1362,115 +1362,200 @@ Refer to the [Cilium WireGuard guide](https://docs.cilium.io/en/stable/security/
 
 ---
 
-## **16. Upgrading the Control Plane and Worker Nodes**
+##  **16. Upgrading Kubernetes Clusters**
 
-This section outlines the exact steps to upgrade your Kubernetes cluster based on the official [Kubernetes documentation](https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/).
+This guide covers upgrading from Kubernetes 1.30 to 1.31 as an example. Adjust version numbers according to your needs.
 
----
+For comprehensive documentation, refer to the official Kubernetes upgrade guide:
+https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/
 
-### **1. Upgrade the Control Plane**
+## 1. Update Package Repositories
 
-#### **Step 1: Prepare for the Upgrade**
-1. **Check the Current Version**:
+### For Ubuntu/Debian Systems:
+
+```bash
+# Add the repository configuration
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /" | \
+  sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+# Add the key
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+# Update package index
+sudo apt-get update
+```
+
+### For CentOS/RHEL Systems:
+
+```bash
+# Add new repository
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.31/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+EOF
+```
+
+## 2. Control Plane Node Upgrade
+
+### Preparation Steps
+
+1. Verify current versions:
+```bash
+kubectl version --short
+kubeadm version
+kubelet --version
+```
+
+2. Check cluster health:
+```bash
+kubectl get nodes
+kubectl get pods -A
+```
+
+3. Disable swap:
+```bash
+sudo swapoff -a
+```
+
+### Upgrade Control Plane Node
+
+1. Cordon the control plane node:
+```bash
+# Replace master-node with your node name
+kubectl cordon master-node
+```
+
+2. Update kubeadm:
+```bash
+# Example upgrading to 1.31.1-00
+sudo apt-get update
+sudo apt-get install -y kubeadm=1.31.1-00
+kubeadm version
+```
+
+3. Plan and verify the upgrade:
+```bash
+sudo kubeadm upgrade plan
+```
+
+4. Apply the upgrade:
+```bash
+# Example upgrading to 1.31.1
+sudo kubeadm upgrade apply v1.31.1
+```
+
+5. Upgrade kubelet and kubectl:
+```bash
+# For Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install -y kubelet=1.31.1-00 kubectl=1.31.1-00
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
+
+6. Uncordon the control plane node:
+```bash
+kubectl uncordon master-node
+```
+
+7. Verify the upgrade:
+```bash
+kubectl get nodes
+kubelet --version
+```
+
+## 3. Worker Nodes Upgrade
+
+Repeat these steps for each worker node, one at a time.
+
+### Drain Worker Node
+
+1. Drain the node (from control plane):
+```bash
+# Replace worker-1 with your node name
+kubectl drain worker-1 --ignore-daemonsets --delete-emptydir-data
+```
+
+### Upgrade Worker Node
+
+1. On the worker node, upgrade kubeadm:
+```bash
+sudo apt-get update
+sudo apt-get install -y kubeadm=1.31.1-00
+```
+
+2. Upgrade the node configuration:
+```bash
+sudo kubeadm upgrade node
+```
+
+3. Upgrade kubelet and kubectl:
+```bash
+sudo apt-get update
+sudo apt-get install -y kubelet=1.31.1-00 kubectl=1.31.1-00
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+```
+
+### Uncordon Worker Node
+
+1. Make the node schedulable again (from control plane):
+```bash
+kubectl uncordon worker-1
+```
+
+## 4. Verify Cluster Status
+
+```bash
+# Check node versions
+kubectl get nodes
+
+# Verify all pods are running
+kubectl get pods -A
+
+# Check component status
+kubectl get componentstatuses
+```
+
+## Common Issues and Solutions
+
+1. **Pod Eviction Timeout**
+   - If pods take too long to evict during drain:
    ```bash
-   kubectl version --short
+   kubectl drain node-name --force --ignore-daemonsets --delete-emptydir-data --grace-period=30
    ```
 
-2. **Ensure Swap is Disabled**:
-   Kubernetes requires swap to be disabled. Verify and disable swap if necessary:
+2. **kubelet Service Fails**
+   - Check logs:
    ```bash
-   sudo swapoff -a
+   journalctl -xeu kubelet
+   ```
+   - Common fix for certificate issues:
+   ```bash
+   sudo kubeadm init phase kubelet-start
    ```
 
-3. **Verify Cluster Health**:
+3. **API Server Unavailable**
+   - Verify API server pod:
    ```bash
-   kubectl get nodes
-   kubectl get pods --all-namespaces
+   kubectl get pods -n kube-system | grep api-server
+   kubectl describe pod kube-apiserver-master -n kube-system
    ```
 
-#### **Step 2: Upgrade `kubeadm`**
-Install the newer `kubeadm` version:
-   ```bash
-   sudo apt-get update && sudo apt-get install -y kubeadm=<desired-version>
-   ```
+## Important Notes
 
-Check the installed version:
-   ```bash
-   kubeadm version
-   ```
-
-#### **Step 3: Plan the Upgrade**
-Run the following command to confirm the versions and steps:
-   ```bash
-   kubeadm upgrade plan
-   ```
-
-#### **Step 4: Upgrade the Control Plane**
-Upgrade the control plane to the desired version:
-   ```bash
-   sudo kubeadm upgrade apply v<desired-version>
-   ```
-
-This command will:
-- Upgrade `kube-apiserver`, `kube-controller-manager`, `kube-scheduler`, and other components.
-- Ensure etcd is upgraded (if necessary).
-
-#### **Step 5: Upgrade `kubelet` and `kubectl`**
-Upgrade `kubelet` and `kubectl` to match the control plane:
-   ```bash
-   sudo apt-get update && sudo apt-get install -y kubelet=<desired-version> kubectl=<desired-version>
-   sudo systemctl restart kubelet
-   ```
-
-#### **Step 6: Verify the Control Plane Upgrade**
-Confirm all components are running correctly:
-   ```bash
-   kubectl get pods -n kube-system
-   ```
-
----
-
-### **2. Upgrade Worker Nodes**
-
-#### **Step 1: Upgrade `kubeadm` on the Worker Node**
-Install the desired version of `kubeadm` on the worker node:
-   ```bash
-   sudo apt-get update && sudo apt-get install -y kubeadm=<desired-version>
-   ```
-
-#### **Step 2: Upgrade the Worker Node**
-Run the upgrade command to apply the configuration:
-   ```bash
-   sudo kubeadm upgrade node
-   ```
-
-#### **Step 3: Upgrade `kubelet` and `kubectl`**
-Install the compatible versions of `kubelet` and `kubectl`:
-   ```bash
-   sudo apt-get update && sudo apt-get install -y kubelet=<desired-version> kubectl=<desired-version>
-   sudo systemctl restart kubelet
-   ```
-
-#### **Step 4: Verify the Node**
-Confirm the worker node has been upgraded:
-   ```bash
-   kubectl get nodes
-   ```
-
----
-
-### **3. Validate the Cluster**
-1. Ensure all nodes are running the correct version:
-   ```bash
-   kubectl get nodes
-   ```
-
-2. Verify workloads are running:
-   ```bash
-   kubectl get pods --all-namespaces
-   ```
-
----
+- 🚨 Always backup etcd before upgrading
+- ⚠️ Only upgrade one minor version at a time (e.g., 1.27.x → 1.28.x)
+- 📝 Keep track of the exact versions you're upgrading to
+- 🔄 Plan for rollback in case of failure
+- 🕐 Schedule upgrade during maintenance window
+- 📊 Monitor cluster health throughout the process
 
 ## **17. Backing Up and Restoring etcd**
 
