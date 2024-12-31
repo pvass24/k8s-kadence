@@ -12,8 +12,44 @@ The exam environment uses `vim` as the default editor. While you don't need to b
 - **Open a File**: `vim file.yaml`
 - **Enter Insert Mode**: Press `i`
 - **Exit Insert Mode**: Press `Esc`
-- **Save and Exit**: `:wq`
+- **Save and Exit**: 
+  - `:wq` (write and quit)
+  - `:x` (save and exit - only writes if changes were made)
 - **Undo Changes**: Press `u`
+
+> 💡 **Tip**: `:x` is slightly more efficient than `:wq` because it only writes to the file if you've made changes. This can be faster when you're just viewing files.
+
+#### Quick Edit-Test Workflow with Ctrl+Z
+The most efficient way to edit and validate YAML files is by using vim's suspend feature:
+
+1. **Edit in vim**:
+   ```bash
+   vim deployment.yaml
+   ```
+
+2. **Suspend vim**:
+   - First press `ESC` to enter Normal mode (this is crucial!)
+   - Then press `Ctrl+Z`
+   - This suspends vim and returns you to the shell
+   - Your vim session and all changes are preserved
+   
+   > ⚠️ **Important**: Always ensure you're in Normal mode by pressing `ESC` before using `Ctrl+Z`. If you try to use `Ctrl+Z` while in Insert mode, it won't work as expected.
+
+3. **Run kubectl commands**:
+   ```bash
+   kubectl apply -f deployment.yaml --dry-run=client
+   ```
+
+4. **Resume vim**:
+   ```bash
+   fg
+   ```
+   - This brings back your vim session exactly where you left off
+
+💡 **Pro Tips**:
+- Use `:w` to save before suspending if you want to validate changes
+- Keep track of error line numbers from kubectl to jump directly to them in vim
+- Use `!!` to repeat your last kubectl command after returning from vim
 
 #### Navigation
 - **Search for Text**: Type `/string` and press Enter
@@ -66,26 +102,36 @@ spec:
 Run the following command to apply the deployment YAML file:
 ```bash
 kubectl apply -f deployment.yaml
+```
 
 ### Error Message Example
 If there's an error in the file, you might see a message like this:
 ```plaintext
 error: error validating "deployment.yaml": error converting YAML to JSON: yaml: line 20: did not find expected key
+```
 
 ### Step 2: Open the File in `vim` and Jump to Line 20
 
 1. Open the file in `vim`:
    ```bash
    vim deployment.yaml
+   ```
 
 Once the file is open, jump directly to line 20 by typing:
 ```plaintext
 :20
+```
 
-Fix your error(s) and save file with
-
+Fix your error(s) and save file with:
 ```plaintext
 :x
+```
+
+### Recommended `.vimrc` Configuration
+```vim
+set expandtab
+set shiftwidth=2
+set softtabstop=2
 ```
 
 `### Handling Immutable Resources When `vim` Creates a Temporary File
